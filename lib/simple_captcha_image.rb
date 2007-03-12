@@ -34,7 +34,7 @@ module SimpleCaptcha #:nodoc
       options[:color] = "darkblue" unless options.has_key?(:color)
       text = Draw.new
       text.annotate(options[:image], 0, 0, 0, 5, options[:string]) do
-        self.font = 'Courier'
+        self.font_family = 'courier'
         self.pointsize = 22
         self.fill = options[:color]
         self.gravity = NorthGravity 
