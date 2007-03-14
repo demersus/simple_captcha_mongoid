@@ -21,7 +21,7 @@ RMagick is available on RubyForge http://rubyforge.org
 Installation
 ============
 SimpleCaptcha plugin can be installed by running this command from the application root
->> ruby script\plugin install svn://rubyforge.org/var/svn/simplecaptcha
+>> ruby script\plugin install svn://rubyforge.org/var/svn/expressica/plugins/simple_captcha
 
 
 Usage
