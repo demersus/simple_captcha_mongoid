@@ -69,7 +69,7 @@ module SimpleCaptcha #:nodoc
     #
     # All Feedbacks/CommentS/Issues/Queries are welcome.
     def show_simple_captcha(options={})
-      name = create_image(options[:image_style])
+      name = create_image(options)
       if options[:object]
         captcha_code = create_code
         field = text_field(options[:object], :captcha, :value => "")
@@ -85,6 +85,7 @@ module SimpleCaptcha #:nodoc
            <p>#{field}</p>
            </div>
            EOS
+      GC.start
       return ret
     end
     

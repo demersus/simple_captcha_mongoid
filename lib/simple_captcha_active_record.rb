@@ -36,7 +36,7 @@ module SimpleCaptcha #:nodoc
         alias_method :valid_without_captcha?, :valid?
         alias_method :save_without_captcha, :save
       end
-      @captcha_invalid_message = (options[:message].nil? || options[:message].empty?) ?  " did not match" : options[:message]
+      @captcha_invalid_message = (options[:message].nil? || options[:message].empty?) ?  " image did not match with text" : options[:message]
       module_eval(turing_valid_method)
       module_eval(turing_save_method)
     end
@@ -44,6 +44,7 @@ module SimpleCaptcha #:nodoc
     def turing_valid_method #:nodoc
       ret = <<-EOS
       def valid?
+        return valid_without_captcha? if RAILS_ENV == 'test'
         if authenticate_with_captcha
           ret = valid_without_captcha?
           data = PStore.new(CAPTCHA_DATA_PATH + "data")
@@ -62,6 +63,7 @@ module SimpleCaptcha #:nodoc
         end
       end
       def valid_with_captcha?
+        return valid_without_captcha? if RAILS_ENV == 'test'
         self.authenticate_with_captcha = true
         ret = self.valid?
         self.authenticate_with_captcha = false
@@ -79,14 +81,14 @@ module SimpleCaptcha #:nodoc
         self.authenticate_with_captcha = false
         return ret
       end
-      def save
+      def save(check_validations=true)
         self.authenticate_with_captcha = false
-        self.save_without_captcha
+        self.save_without_captcha(check_validations)
       end
       EOS
       return ret
     end
-
+    
   end
   
 end

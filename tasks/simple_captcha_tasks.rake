@@ -1,12 +1,12 @@
 require 'pstore'
 desc "Remove unuseful captcha images and sessions data"
-task :remove_captcha_files do
+task :remove_simple_captcha_files do
   image_path = "#{RAILS_ROOT}/public/images/simple_captcha/"
   data_path = "#{RAILS_ROOT}/tmp/simple_captcha/"
-  ttl = 1.days.ago
+  ttl = 1.hours.ago
   Dir.foreach(image_path) do |file_name| 
 	file = image_path + file_name
-	if (/^.*.jpg$/).match(file) and File.mtime(file) < ttl
+	if File.mtime(file) < ttl
 	   file_data = file_name.split(".").first
 	   File.delete(file) 
 	   begin
@@ -17,5 +17,5 @@ task :remove_captcha_files do
 	   end
 	end
   end if File.exist?(image_path) and File.exist?(data_path)
-  puts "Captcha files removed !"
+  puts "Captcha files removed!"
 end
