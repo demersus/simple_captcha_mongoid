@@ -24,10 +24,10 @@ module SimpleCaptcha #:nodoc
     include Config
     
     def create_captcha_directories #:nodoc
-      Dir.mkdir(IMAGE_PATH, 777) unless File.exist?(IMAGE_PATH)
-      Dir.mkdir(DATA_PATH, 777) unless File.exist?(DATA_PATH)
-      Dir.mkdir(CAPTCHA_DATA_PATH, 777) unless File.exist?(CAPTCHA_DATA_PATH)
-      Dir.mkdir(CAPTCHA_IMAGE_PATH, 777) unless File.exist?(CAPTCHA_IMAGE_PATH)
+      Dir.mkdir(IMAGE_PATH, 0777) unless File.exist?(IMAGE_PATH)
+      Dir.mkdir(DATA_PATH, 0777) unless File.exist?(DATA_PATH)
+      Dir.mkdir(CAPTCHA_DATA_PATH, 0777) unless File.exist?(CAPTCHA_DATA_PATH)
+      Dir.mkdir(CAPTCHA_IMAGE_PATH, 0777) unless File.exist?(CAPTCHA_IMAGE_PATH)
     end
     
     def create_code #:nodoc
