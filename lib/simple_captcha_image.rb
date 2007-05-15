@@ -1,6 +1,5 @@
 require 'pstore'
 require 'RMagick'
-include Magick
 
 module SimpleCaptcha #:nodoc
   
@@ -38,18 +37,18 @@ module SimpleCaptcha #:nodoc
     
     def add_text(options) #:nodoc
       options[:color] = "darkblue" unless options.has_key?(:color)
-      text = Draw.new
+      text = Magick::Draw.new
       text.annotate(options[:image], 0, 0, 0, 5, options[:string]) do
         self.font_family = 'arial'
         self.pointsize = 22
         self.fill = options[:color]
-        self.gravity = NorthGravity 
+        self.gravity = Magick::NorthGravity 
       end
       return options[:image]
     end
     
     def add_text_and_effects(options={}) #:nodoc
-      image = Image.new(110, 30){self.background_color = 'white'}
+      image = Magick::Image.new(110, 30){self.background_color = 'white'}
       options[:image] = image
       distortion = DISTORTIONS[options[:distortion].to_sym] || DISTORTIONS[:medium]
       amp, freq = distortion[0], distortion[1]
