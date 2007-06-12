@@ -35,14 +35,15 @@ module SimpleCaptcha #:nodoc
       Digest::SHA1.hexdigest(captcha_hash_string + session.session_id + captcha_hash_string)
     end
     
-    def remove_simple_captcha_files #:nodoc
+    def remove_simple_captcha_files() #:nodoc
       begin
-        ttl = 1.hours.ago
+        ttl=1.hours.ago
         Dir.foreach(CAPTCHA_IMAGE_PATH) do |file_name| 
           file = CAPTCHA_IMAGE_PATH + file_name
+          next unless /.*\.jpg/.match(file)
           if File.mtime(file) < ttl
             file_data = file_name.split(".").first
-            File.delete(file) 
+            File.delete(file)
             data = PStore.new(CAPTCHA_DATA_PATH + "data")
             data.transaction{data.delete(file_data)}
           end
@@ -52,6 +53,13 @@ module SimpleCaptcha #:nodoc
       end
     end
     
+    def simple_captcha_passed!(key = create_code) #:nodoc
+      file = File.join(CAPTCHA_IMAGE_PATH, key + ".jpg")
+      File.delete(file) if File.exist?(file)
+      data = PStore.new(CAPTCHA_DATA_PATH + "data")
+      data.transaction{data.delete(key)}
+    end
+
     private :create_code
   end
 end

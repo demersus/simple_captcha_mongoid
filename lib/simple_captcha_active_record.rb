@@ -31,7 +31,7 @@ module SimpleCaptcha #:nodoc
     def apply_simple_captcha(options = {})
       module_eval do
         require 'pstore'
-        include SimpleCaptcha::Config
+        include SimpleCaptcha::ConfigTasks
         attr_accessor :captcha, :captcha_code, :authenticate_with_captcha
         alias_method :valid_without_captcha?, :valid?
         alias_method :save_without_captcha, :save
@@ -57,6 +57,7 @@ module SimpleCaptcha #:nodoc
             ret = false
             self.errors.add(:captcha, "#{@captcha_invalid_message}")
           end
+          simple_captcha_passed!(captcha_code) if ret
           return ret
         else
           return valid_without_captcha?

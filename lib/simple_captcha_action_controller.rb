@@ -27,6 +27,7 @@ module SimpleCaptcha #:nodoc
         data.transaction do
           @ret = data[create_code] == params[:captcha].delete(" ").upcase
         end
+        simple_captcha_passed! if @ret
         return @ret
       else
         return false
