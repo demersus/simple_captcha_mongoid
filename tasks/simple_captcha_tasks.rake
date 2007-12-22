@@ -29,7 +29,12 @@ namespace :simple_captcha do
       puts %x{ruby script/generate migration create_simple_captcha_data}
       puts "==============================================================================="
       copy_to_path = File.join(RAILS_ROOT, "db", "migrate")
-      migration_file = File.join(copy_to_path, Dir.entries(copy_to_path).last)
+      migration_filename = 
+        Dir.entries(copy_to_path).collect do |file|
+          number, *name = file.split("_")
+          file if name.join("_") == "create_simple_captcha_data.rb"
+        end.compact.first
+      migration_file = File.join(copy_to_path, migration_filename)
       File.open(migration_file, "wb"){|f| f.write(File.read(source_file))}
       puts "rake db:migrate"
       puts %x{rake db:migrate}
