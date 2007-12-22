@@ -1,11 +1,12 @@
+# Copyright (c) 2007 [Sur http://expressica.com]
+
 require 'action_view'
 
 module SimpleCaptcha #:nodoc
-  
   module ViewHelpers #:nodoc
     
-    include ImageHandlers
-    
+    include ConfigTasks
+
     # Simple Captcha is a very simplified captcha.
     #
     # It can be used as a *Model* or a *Controller* based Captcha depending on what options
@@ -69,28 +70,46 @@ module SimpleCaptcha #:nodoc
     #
     # All Feedbacks/CommentS/Issues/Queries are welcome.
     def show_simple_captcha(options={})
-      name = create_image(options)
-      if options[:object]
-        captcha_code = create_code
-        field = text_field(options[:object], :captcha, :value => "")
-        field << hidden_field(options[:object], :captcha_code, {:value => captcha_code})
-      else
-        field = text_field_tag(:captcha)
+      options[:field_value] = set_simple_captcha_data
+      simple_captcha_options = 
+        {
+          :image => simple_captcha_image(options),
+          :label => options[:label] || "type the code from the image",
+          :field => simple_captcha_field(options)
+        }
+      render :partial => 'simple_captcha/simple_captcha', :locals => {:simple_captcha_options => simple_captcha_options}
+    end
+
+    def simple_captcha_image(options={})
+      image = ''
+      (0..5).each do |id|
+        image << "<img width='15' src='/#{params[:controller]}/get_simple_captcha_image/#{id}?image_style=#{options[:image_style]}' alt='#{id}.jpg' />"
       end
-      label = (!options[:label] or options[:label].empty?) ? "type the text from the image" : options[:label]
-      ret =<<-EOS
-           <div id='simple_captcha'>
-           #{image_tag 'simple_captcha/' + name, :style => 'border:1px solid #999'}
-           <p style='font-size:13px'>#{label}</p>
-           <p>#{field}</p>
-           </div>
-           EOS
-      GC.start
-      return ret
+      image
     end
     
+    def simple_captcha_field(options={})
+      field = ''
+      if options[:object]
+        field << text_field(options[:object], :captcha, :value => "")
+        field << hidden_field(options[:object], :captcha_key, {:value => options[:field_value]})
+      else
+        field << text_field_tag(:captcha)
+      end
+      field
+    end
+
+    def set_simple_captcha_data
+      key, value = simple_captcha_key, ""
+      6.times{value << (65 + rand(25)).chr}
+      data = SimpleCaptchaData.get_data(key)
+      data.value = value
+      data.save
+      key
+    end
+
+    private :set_simple_captcha_data, :simple_captcha_image, :simple_captcha_field
   end
-  
 end
 
 ActionView::Base.module_eval do

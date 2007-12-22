@@ -1,8 +1,8 @@
-require 'action_controller'
-require 'pstore'
+# Copyright (c) 2007 [Sur http://expressica.com]
 
-module SimpleCaptcha #:nodoc
-  
+require 'application'
+
+module SimpleCaptcha #:nodoc 
   module ControllerHelpers #:nodoc
     
     include ConfigTasks #:nodoc
@@ -23,22 +23,38 @@ module SimpleCaptcha #:nodoc
     def simple_captcha_valid?
       return true if RAILS_ENV == 'test'
       if params[:captcha]
-        data = PStore.new(CAPTCHA_DATA_PATH + "data")
-        data.transaction do
-          @ret = data[create_code] == params[:captcha].delete(" ").upcase
-        end
-        simple_captcha_passed! if @ret
-        return @ret
+        data = simple_captcha_value
+        result = data == params[:captcha].delete(" ").upcase
+        simple_captcha_passed! if result
+        return result
       else
         return false
       end
     end
     
+    def get_simple_captcha_image
+      send_file simple_captcha_image_name, :type => 'image/jpeg', :disposition => 'inline', :filename => params[:id] + ".jpg"
+    end
+    
+    def simple_captcha_image_style #:nodoc
+      return "default" if params[:image_style].nil? || params[:image_style].empty?
+      File.exist?(simple_captcha_image_path + params[:image_style]) ?
+        params[:image_style] :
+        "default"
+    end
+    
+    def simple_captcha_image_name #:nodoc
+      File.join(simple_captcha_image_path, 
+        simple_captcha_image_style,
+        simple_captcha_value.split("")[params[:id].to_i] + ".jpg"
+        )
+    end
+    
+    private :simple_captcha_image_style, :simple_captcha_image_name
   end
-  
 end
 
 
-ActionController::Base.class_eval do
+ApplicationController.module_eval do
   include SimpleCaptcha::ControllerHelpers
 end

@@ -1,7 +1,8 @@
+# Copyright (c) 2007 [Sur http://expressica.com]
+
 require 'active_record'
 
 module SimpleCaptcha #:nodoc
-  
   module ModelHelpers #:nodoc
     
     # To implement model based simple captcha use this method in the model as...
@@ -28,41 +29,38 @@ module SimpleCaptcha #:nodoc
     #  @user.save_with_captcha   # whene captcha validation is required.
     #
     #  @user.save                # when captcha validation is not required.
-    def apply_simple_captcha(options = {})
-      module_eval do
-        require 'pstore'
-        include SimpleCaptcha::ConfigTasks
-        attr_accessor :captcha, :captcha_code, :authenticate_with_captcha
-        alias_method :valid_without_captcha?, :valid?
-        alias_method :save_without_captcha, :save
+    module ClassMethods
+      def apply_simple_captcha(options = {})
+        module_eval do
+          include SimpleCaptcha::ConfigTasks
+          attr_accessor :captcha, :captcha_key, :authenticate_with_captcha
+          alias_method :valid_without_captcha?, :valid?
+          alias_method :save_without_captcha, :save
+          include SimpleCaptcha::ModelHelpers::InstanceMethods
+        end
+        @captcha_invalid_message = 
+          options[:message] || "image did not match with the code"
       end
-      @captcha_invalid_message = (options[:message].nil? || options[:message].empty?) ?  " image did not match with text" : options[:message]
-      module_eval(turing_valid_method)
-      module_eval(turing_save_method)
     end
     
-    def turing_valid_method #:nodoc
-      ret = <<-EOS
+    module InstanceMethods
       def valid?
         return valid_without_captcha? if RAILS_ENV == 'test'
         if authenticate_with_captcha
           ret = valid_without_captcha?
-          data = PStore.new(CAPTCHA_DATA_PATH + "data")
-          data.transaction do
-            @stored_captcha = data[captcha_code] rescue nil
-          end
-          if captcha and captcha.upcase.delete(" ") == @stored_captcha
-            ret = ret and true
+          if captcha && captcha.upcase.delete(" ") == simple_captcha_value(captcha_key)
+            ret = ret && true
           else
             ret = false
-            self.errors.add(:captcha, "#{@captcha_invalid_message}")
+            self.errors.add(:captcha, @captcha_invalid_message)
           end
-          simple_captcha_passed!(captcha_code) if ret
+          simple_captcha_passed!(captcha_key) if ret
           return ret
         else
           return valid_without_captcha?
         end
       end
+      
       def valid_with_captcha?
         return valid_without_captcha? if RAILS_ENV == 'test'
         self.authenticate_with_captcha = true
@@ -70,30 +68,22 @@ module SimpleCaptcha #:nodoc
         self.authenticate_with_captcha = false
         return ret
       end
-      EOS
-      return ret
-    end
     
-    def turing_save_method #:nodoc
-      ret =<<-EOS
       def save_with_captcha
         self.authenticate_with_captcha = true
         ret = self.save_without_captcha
         self.authenticate_with_captcha = false
         return ret
       end
+      
       def save(check_validations=true)
         self.authenticate_with_captcha = false
         self.save_without_captcha(check_validations)
       end
-      EOS
-      return ret
-    end
-    
+    end  
   end
-  
 end
 
 ActiveRecord::Base.module_eval do
-  class << self; include SimpleCaptcha::ModelHelpers; end
+  extend SimpleCaptcha::ModelHelpers::ClassMethods
 end

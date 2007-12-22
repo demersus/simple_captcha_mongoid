@@ -1,3 +1,5 @@
+# Copyright (c) 2007 [Sur http://expressica.com]
+
 require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'

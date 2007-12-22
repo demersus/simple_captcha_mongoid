@@ -1,3 +1,5 @@
+# Copyright (c) 2007 [Sur http://expressica.com]
+
 require 'test/unit'
 
 class SimpleCaptchaTest < Test::Unit::TestCase

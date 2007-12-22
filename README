@@ -1,137 +1,198 @@
+Copyright (c) 2007 [Sur http://expressica.com]
+
 SimpleCaptcha
-=============
-##############################################################################
- Version:	1.0 - beta						     
- Author:	Sur -- http://expressica.com				     
- Contributors:	Manik, Akhil, Ritu, Hemant, Gaurav -- http://vinsol.com/team 
- License:	Ruby MIT						     
-##############################################################################
+=========================================================================================
+  Version:  1.2.0
+  Author:  Sur http://expressica.com             
+  Plugin Homepage: http://simple_captcha.expressica.com
+  Contributors:  http://vinsol.com/team 
+  License:  MIT  
 
+  Introduction:
+  -------------
+  SimpleCaptcha is the simplest and a robust captcha plugin. Its implementation requires 
+  adding up a single line in views and in controllers/models.
+  SimpleCaptcha is available to be used with Rails2.0 or above and also it provides the 
+  backward compatibility with previous versions of Rails.
 
-SimpleCaptcha is a plugin for rubyonrails applications to provide the captcha functionality.
-Its implementation is really very simple, it requires only a single line of code in view and a single line of code in controller/model.
-For more details see the plugin's documentation on http://expressica.com .
-
-
-Pre-requisites
-==============
-1.) RMagick
-RMagick is the image handling library in ruby and is required to implement the SimpleCaptcha.
-RMagick is available on RubyForge http://rubyforge.org
-
+  Major Changes:
+  --------------
+  Major changes in the plugin's logic and implementation have been incorporated with this 
+  release...
+  1) RMagick has been removed from the plugin. Moreover the logic to render the random
+  images has been restructured from the scratch and it will not require any Image Processing
+  library.
+  2) FileSystem will no more be used by any means for the captcha functionality. Neither for
+  storing the secret code nor for the images... as secret code storage has been moved to
+  from filesystem to database storage and random image generation logic has been reqtructured
+  to not to produce any image on filesystem.
+  
+  Advantages:
+  -----------
+  1) Zero dependency on Image processing library(RMagick is removed).
+  2) Zero FileSystem usage(secret code moved to db-store and image generation removed).
+  3) Robust and non-hackable captcha.
+  4) Works absolutely fine in distributed environment(session and db based implementation works 
+    fine in distributed environment).
+  5) No hassles for handling the public/images/simple_captcha directory for capistrano
+    (no image generation, hence no extra directory is needed in public/images).
+  6) Implementation is as easy as just writing a single line in your view...
+    "<%= show_simple_captcha %>" within the <form> tags.
+  7) Flexible DOM and CSS handling(There is a separate view partial for rednering SimpleCaptcha 
+    DOM elements).
 
 Installation
-============
+=========================================================================================
+  (head revision with svn)
+  SVN checkout the plugin as
+  svn co svn://rubyforge.org/var/svn/expressica/plugins/simple_captcha simple_captcha
+  Now put the directory simple_captcha in your application as /vendor/plugins/simple_captcha
 
-(recommended... to sync with latest revisions)
-SVN checkout the plugin as
-svn co svn://rubyforge.org/var/svn/expressica/plugins/simple_captcha simple_captcha
-Now put this directory simple_captcha in your application as /vendor/plugins/simple_captcha
+  OR
 
-OR
+  (head revision without svn)
+  SimpleCaptcha plugin can be installed by running this command from the application root
+  
+  >> ruby script/plugin install svn://rubyforge.org/var/svn/expressica/plugins/simple_captcha
 
-SimpleCaptcha plugin can be installed by running this command from the application root
->> ruby script/plugin install svn://rubyforge.org/var/svn/expressica/plugins/simple_captcha
+
+Setup
+=========================================================================================
+  After installation, run this rake task from the application root...
+  
+  >> rake simple_captcha:setup
 
 
 Usage
-======
+=========================================================================================
 
-=>Controller Based 
-
-
-In the view file within the form tags write this code
-
-<%= show_simple_captcha %>
-
-and in the controller' action authenticate it as 
-
-if simple_captcha_valid?
- do this
-else
- do that
-end
-
-
-=>Model Based
+  Controller Based
+  =======================================================================================
+    In the view file within the form tags add this code
+    
+    <%= show_simple_captcha %>
+    
+    and in the controller's action authenticate it as 
+    
+      if simple_captcha_valid?
+        do this
+      else
+        do that
+      end
 
 
-In the view file within the form tags write this code
+  Model Based
+  =======================================================================================
+    In the view file within the form tags write this code
 
-<%= show_simple_captcha(:object=>"user") %>
+    <%= show_simple_captcha(:object=>"user") %>
 
-and in the model class add this code
+    and in the model class add this code
 
-class User < ActiveRecord::Basse
-  apply_simple_captcha
-end
+    class User < ActiveRecord::Basse
+      apply_simple_captcha
+    end
 
-We may need to save the instance where captcha is not at all needed, actually captcha is usually needed
-on some particular screen only eg. signing up of a new user.
-So, here is the detail of explicit methods to authenticate and validate the instance with captcha.
+    Validating with captcha
+    ---------------------------------------------------------------------------------------
+      @user.valid_with_captcha?
+      NOTE: @user.valid? will still work as it should, it will not validate the captcha code.
+
+    Saving with captcha
+    ---------------------------------------------------------------------------------------
+      @user.save_with_captcha
+      NOTE: @user.save will still work as it should, it will not validate the captcha code.
+
+Options & Examples
+===========================================================================================
+
+  View Options
+  =========================================================================================
+  
+    :label
+    ---------------------------------------------------------------------------------------
+      provides the custom text b/w the image and the text field,
+      the default is "type the text from the image"
+
+    :image_style
+    ---------------------------------------------------------------------------------------
+      provides the specific image style for the captcha image.
+      By default it uses the style provided by the plugin. Contrary to the version-1.0,
+      SimpleCaptcha now provides only one image style which is default. Though you can
+      have any number of styles as per your need... its much flexible and customizable now.
+      
+      How to add more image styles ?
+      ------------------------------
+      You can create a set of JPEG alphabetical images using any photo editor with any 
+      style you want, preferably of size 15x20px(otherwise SimpleCaptcha CSS will need to be 
+      changed). Just name the images as A.jpg, B.jpg...Z.jpg (please mind the format "A.jpg",
+       A-upcase; jpg-downcase) put them in a folder, name the folder what you want the name 
+      of style e.g. "flashy_image". 
+      Now put this folder "flashy_image" in the plugin's assets directory as...
+      "vendor/plugins/simple_captcha/assets/images/simple_captcha/flashy_image". Now you can
+      use this style in the method call in the view as...
+      <%= show_simple_captcha(:image_style => "flashy_image") %>.
+      
+      WARNING: 
+      --------
+      All the images of the alphabetical-image-set you will create, should be 
+      identical wrt. all the file attributes. No file should hold any unique value of any file
+      attribute viz. disk_size, image_size(width, height), ctime, mtime or so...
+      If you notice the default images provided by the plugin are exactly identical with
+      850bytes in volume, 15x20px in size and all have the same ctime, mtime attributes.
+      If you are unable to make the images with these constraints, it is highly recommended
+      that you should use the default style only. If any of these attributes are unique,
+      it might make your captcha hackable. 
+      The default set of images is ROBUST and NON-HACKABLE by all means.
+      
+      How to change the CSS for SimpleCaptcha DOM elements ?
+      -----------------------------------------------------
+      You can change the CSS of the SimpleCaptcha DOM elements as per your need in this file...
+      For Rails >= 2.0 the file wiil reside as...
+      "/vendor/plugins/simple_captcha/assets/views/simple_captcha/_simple_captcha.erb"
+      For Rails < 2.0 the file will reside as...
+      "/app/views/simple_captcha/_simple_captcha.rhtml"
+    
+    :object
+    ---------------------------------------------------------------------------------------
+      the name of the object of the model class, to implement the model based captcha.
+    
+  Examples
+  =========================================================================================
+  
+    Controller Based Example
+    ---------------------------------------------------------------------------------------
+      <%= show_simple_captcha(:label => "human authentication") %>
+    
+    Model Based Example
+    ---------------------------------------------------------------------------------------
+      <%= show_simple_captcha(:object => 'user', :label => "human authentication") %>
 
 
--> for validating 
 
-use @user.valid_with_captcha? when captcha authentication is required
-and use @user.valid? when captcha authentication is not required.
+  Model Options
+  =========================================================================================
 
+    :message
+    ---------------------------------------------------------------------------------------
+      provides the custom message on failure of captcha authentication
+      the default is "image did not match with text"
 
--> for saving
-
-use @user.save_with_captcha when captcha authentication is required
-and use @user.save when captcha authentication is not required.
-
-
--------------------------------------------------------------------------------
-
-
-
-Options for View Helper method show_simple_captcha
----------------------------------------------------
-1.) :label
-	provide the custom text b/w the image and the text field, 
-	the default is "type the text from the image"
-2.) :image_style
-	we can provide the specific image style out of the eight styles available,
-	
-	"simply_blue"
-	"simply_red"
-	"simply_green"
-	"distorted_black"
-	"all_black"
-	"embosed_silver"
-	"charcoal_grey"
-	"almost_invisible"
-
-	the default is "simply_blue".
-3.) :object
-	the name of the object of the model class, to implement the model based captcha.
-4.) :distortion
-	there are three level of distortion, which measures the complexity of the text of the image as
-	"low"
-	"medium"
-	"high"
-	the default is "medium"
-
-example --  
-
-<%= show_simple_captcha(:object => "user", :image_style => "embosed_silver", :label => "human authentication", :distortion => "low") %>
+    Model's Example
+    ---------------------------------------------------------------------------------------
+      class User < ActiveRecord::Base
+        apply_simple_captcha :message => " image and text were different"
+      end
 
 
-Options for Model method apply_simple_captcha
----------------------------------------------
+===========================================================================================
 
-1.) :message
-	we can provide the custom message on failure of captcha authentication
-	the default is "image did not match with text"
+  ALL DONE! Enjoy the simplest captcha plugin.
+  Author: Sur
+  Blog: http://expressica.com
+  Contact: sur.max@gmail.com
+  Plugin Homepage: http://simple_captcha.expressica.com
 
-example --
+  Any feedback/comment/issue/donation is welcome!
 
-	apply_simple_captcha :message => " image and text were different"
-
-==============================================================================================================================================
-
-
-For more detailed examples with sample images visit http://expressica.com
-All Feedbacks/Comments/Issues are welcome.
+===========================================================================================
