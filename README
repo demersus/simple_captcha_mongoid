@@ -58,9 +58,18 @@ Installation
 
 Setup
 =========================================================================================
-  After installation, run this rake task from the application root...
+  After installation, follow these simple steps to setup the plugin. The setup will depend
+  on the version of rails your application is using.
   
+  for rails >= 2.0
+  ---------------
   >> rake simple_captcha:setup
+  >> rake db:migrate
+  
+  for rails < 2.0
+  ---------------
+  >> rake simple_captcha:setup_old
+  >> rake db:migrate
 
 
 Usage
