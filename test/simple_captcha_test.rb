@@ -1,4 +1,4 @@
-# Copyright (c) 2007 [Sur http://expressica.com]
+# Copyright (c) 2008 [Sur http://expressica.com]
 
 require 'test/unit'
 

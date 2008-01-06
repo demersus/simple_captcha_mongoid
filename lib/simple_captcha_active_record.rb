@@ -1,4 +1,4 @@
-# Copyright (c) 2007 [Sur http://expressica.com]
+# Copyright (c) 2008 [Sur http://expressica.com]
 
 require 'active_record'
 
@@ -31,6 +31,11 @@ module SimpleCaptcha #:nodoc
     #  @user.save                # when captcha validation is not required.
     module ClassMethods
       def apply_simple_captcha(options = {})
+        instance_variable_set(:@add_to_base, options[:add_to_base])
+        instance_variable_set(
+          :@captcha_invalid_message,
+          options[:message] || "Secret Code did not match with the Image"
+          )
         module_eval do
           include SimpleCaptcha::ConfigTasks
           attr_accessor :captcha, :captcha_key, :authenticate_with_captcha
@@ -38,8 +43,6 @@ module SimpleCaptcha #:nodoc
           alias_method :save_without_captcha, :save
           include SimpleCaptcha::ModelHelpers::InstanceMethods
         end
-        @captcha_invalid_message = 
-          options[:message] || "image did not match with the code"
       end
     end
     
@@ -52,7 +55,9 @@ module SimpleCaptcha #:nodoc
             ret = ret && true
           else
             ret = false
-            self.errors.add(:captcha, @captcha_invalid_message)
+            self.class.instance_variable_get(:@add_to_base) == true ?
+            self.errors.add_to_base(self.class.instance_variable_get(:@captcha_invalid_message)) :
+            self.errors.add(:captcha, self.class.instance_variable_get(:@captcha_invalid_message))
           end
           simple_captcha_passed!(captcha_key) if ret
           return ret
@@ -66,14 +71,14 @@ module SimpleCaptcha #:nodoc
         self.authenticate_with_captcha = true
         ret = self.valid?
         self.authenticate_with_captcha = false
-        return ret
+        ret
       end
     
       def save_with_captcha
         self.authenticate_with_captcha = true
         ret = self.save_without_captcha
         self.authenticate_with_captcha = false
-        return ret
+        ret
       end
       
       def save(check_validations=true)
