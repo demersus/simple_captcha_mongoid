@@ -140,6 +140,7 @@ Options & Examples
       8) almost_invisible
       
       Default style is 'simply_blue'.
+      You can also specify 'random' to select the random image style.
     
       
     :distortion
