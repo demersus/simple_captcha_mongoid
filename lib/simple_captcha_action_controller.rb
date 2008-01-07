@@ -5,7 +5,7 @@ require 'application'
 module SimpleCaptcha #:nodoc 
   module ControllerHelpers #:nodoc
     
-    include ConfigTasks #:nodoc
+    include ConfigTasks
     
     # This method is to validate the simple captcha in controller.
     # It means when the captcha is controller based i.e. :object has not been passed to the method show_simple_captcha.
@@ -31,26 +31,6 @@ module SimpleCaptcha #:nodoc
         return false
       end
     end
-    
-    def get_simple_captcha_image
-      send_file simple_captcha_image_name, :type => 'image/jpeg', :disposition => 'inline', :filename => params[:id] + ".jpg"
-    end
-    
-    def simple_captcha_image_style #:nodoc
-      return "default" if params[:image_style].nil? || params[:image_style].empty?
-      File.exist?(simple_captcha_image_path + params[:image_style]) ?
-        params[:image_style] :
-        "default"
-    end
-    
-    def simple_captcha_image_name #:nodoc
-      File.join(simple_captcha_image_path, 
-        simple_captcha_image_style,
-        simple_captcha_value.split("")[params[:id].to_i] + ".jpg"
-        )
-    end
-    
-    private :simple_captcha_image_style, :simple_captcha_image_name
   end
 end
 

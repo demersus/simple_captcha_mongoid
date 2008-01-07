@@ -71,21 +71,20 @@ module SimpleCaptcha #:nodoc
     # All Feedbacks/CommentS/Issues/Queries are welcome.
     def show_simple_captcha(options={})
       options[:field_value] = set_simple_captcha_data
-      simple_captcha_options = 
-        {
-          :image => simple_captcha_image(options),
-          :label => options[:label] || "type the code from the image",
-          :field => simple_captcha_field(options)
-        }
-      render :partial => 'simple_captcha/simple_captcha', :locals => {:simple_captcha_options => simple_captcha_options}
+      @simple_captcha_options = 
+        {:image => simple_captcha_image(options),
+         :label => options[:label] || "type the code from the image",
+         :field => simple_captcha_field(options)}
+      render :partial => 'simple_captcha/simple_captcha'
     end
 
     def simple_captcha_image(options={})
-      image = ''
-      (0..5).each do |id|
-        image << "<img width='15' src='/#{params[:controller]}/get_simple_captcha_image/#{id}?image_style=#{options[:image_style]}' alt='#{id}.jpg' />"
-      end
-      image
+      url = 
+        simple_captcha_url(:only_path => false, 
+          :action => 'get_simple_captcha_image',
+          :image_style => options[:image_style] || '', 
+          :distortion => options[:distortion] || '')
+      "<img src='#{url}' alt='simple_captcha.jpg' />"
     end
     
     def simple_captcha_field(options={})

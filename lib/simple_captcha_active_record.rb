@@ -85,7 +85,7 @@ module SimpleCaptcha #:nodoc
         self.authenticate_with_captcha = false
         self.save_without_captcha(check_validations)
       end
-    end  
+    end
   end
 end
 
