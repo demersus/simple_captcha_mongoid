@@ -4,12 +4,12 @@ class SimpleCaptchaController < ApplicationController
 
   include SimpleCaptcha::ImageHelpers
 
-  def get_simple_captcha_image  #:nodoc
+  def simple_captcha  #:nodoc
     send_data(
       generate_simple_captcha_image(:image_style => params[:image_style], 
         :distortion => params[:distortion]), 
-      :type => 'image/jpeg', 
-      :disposition => 'inline', 
+      :type => 'image/jpeg',
+      :disposition => 'inline',
       :filename => 'simple_captcha.jpg')
   end
 

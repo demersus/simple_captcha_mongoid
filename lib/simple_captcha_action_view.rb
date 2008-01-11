@@ -21,6 +21,7 @@ module SimpleCaptcha #:nodoc
     # * label
     # * image_syle
     # * object
+    # * distortion
     #
     # <b>Label:</b>
     #
@@ -80,8 +81,8 @@ module SimpleCaptcha #:nodoc
 
     def simple_captcha_image(options={})
       url = 
-        simple_captcha_url(:only_path => false, 
-          :action => 'get_simple_captcha_image',
+        simple_captcha_url(:only_path => false,
+          :action => 'simple_captcha',
           :image_style => options[:image_style] || '', 
           :distortion => options[:distortion] || '')
       "<img src='#{url}' alt='simple_captcha.jpg' />"
@@ -100,7 +101,7 @@ module SimpleCaptcha #:nodoc
 
     def set_simple_captcha_data
       key, value = simple_captcha_key, ""
-      6.times{value << (65 + rand(25)).chr}
+      6.times{value << (65 + rand(26)).chr}
       data = SimpleCaptchaData.get_data(key)
       data.value = value
       data.save

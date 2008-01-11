@@ -1,6 +1,6 @@
 # Copyright (c) 2008 [Sur http://expressica.com]
 
-require 'application'
+require 'action_controller'
 
 module SimpleCaptcha #:nodoc 
   module ControllerHelpers #:nodoc
@@ -31,10 +31,10 @@ module SimpleCaptcha #:nodoc
         return false
       end
     end
+    
   end
 end
 
-
-ApplicationController.module_eval do
+class ApplicationController < ActionController::Base
   include SimpleCaptcha::ControllerHelpers
 end

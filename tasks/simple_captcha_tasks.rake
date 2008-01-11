@@ -41,10 +41,13 @@ namespace :simple_captcha do
   
   def do_setup
     begin
+      puts "STEP 1"
       generate_migration
       write_migration_content
       copy_view_file
-      puts "Now run the task 'rake db:migrate' to migrate the simple_captcha migration into your db and then edit the file config/routes.rb to define the routing for simple_captcha."
+      puts "Followup Steps"
+      puts "STEP 2 -- run the task 'rake db:migrate'"
+      puts "STEP 3 -- edit the file config/routes.rb to define the simple_captcha route."
     rescue StandardError => e
       p e
     end
