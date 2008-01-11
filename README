@@ -2,7 +2,7 @@ Copyright (c) 2008 [Sur http://expressica.com]
 
 SimpleCaptcha
 =========================================================================================
-  Version:  1.2.2
+  Version: edge
   Author:  Sur [http://expressica.com]
   Plugin Homepage: http://expressica.com/simple_captcha
   Contributors:  http://vinsol.com/team 
@@ -26,6 +26,7 @@ SimpleCaptcha
     "<%= show_simple_captcha %>" within the 'form' tags.
   -> Flexible DOM and CSS handling(There is a separate view partial for rednering SimpleCaptcha 
     DOM elements).
+  -> Automated removal of 1 hour old unmatched simple_captcha data.
 
 Pre-Requisite
 =========================================================================================
@@ -74,6 +75,14 @@ Setup
   
     This is a mandatory route used for rendering the simple_captcha image on the fly without 
     storing on the filesyste.
+
+  STEP 4 (particularly for rails < 1.2.1, please upgrade your rails guys!! )
+  ------
+    add the following line in the file app/controllers/application.rb
+    
+    ApplicationController < ActionController::Base
+      include SimpleCaptcha::ControllerHelpers
+    end
 
 Usage
 =========================================================================================
