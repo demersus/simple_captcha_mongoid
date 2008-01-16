@@ -81,6 +81,7 @@ module SimpleCaptcha #:nodoc
       url = 
         simple_captcha_url(
           :action => 'simple_captcha',
+          :simple_captcha_key => simple_captcha_key,
           :image_style => options[:image_style] || '', 
           :distortion => options[:distortion] || '')
       "<img src='#{url}' alt='simple_captcha.jpg' />"

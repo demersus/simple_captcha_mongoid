@@ -30,7 +30,7 @@ module SimpleCaptcha #:nodoc
     def append_simple_captcha_code #:nodoc      
       color = @simple_captcha_image_options[:color]
       text = Magick::Draw.new
-      text.annotate(@image, 0, 0, 0, 5, simple_captcha_value) do
+      text.annotate(@image, 0, 0, 0, 5, simple_captcha_value(@simple_captcha_image_options[:simple_captcha_key])) do
         self.font_family = 'arial'
         self.pointsize = 22
         self.fill = color
@@ -77,7 +77,10 @@ module SimpleCaptcha #:nodoc
     def generate_simple_captcha_image(options={})  #:nodoc
       @image = Magick::Image.new(110, 30){self.background_color = 'white'}
       @image.format = "JPG"
-      @simple_captcha_image_options = {}
+      @simple_captcha_image_options = {
+        :simple_captcha_key => options[:simple_captcha_key],
+        :color => 'darkblue'
+        }
       @simple_captcha_image_options[:image_style] = 
         IMAGE_STYLES.include?(options[:image_style]) ?
         options[:image_style] :
@@ -88,7 +91,6 @@ module SimpleCaptcha #:nodoc
         DISTORTIONS.has_key?(options[:distortion]) ?
         DISTORTIONS[options[:distortion]] :
         DISTORTIONS['low']
-      @simple_captcha_image_options[:color] = 'darkblue'
       set_simple_captcha_image_style      
       @image.implode(0.2).to_blob
     end
