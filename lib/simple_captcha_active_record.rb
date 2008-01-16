@@ -1,7 +1,5 @@
 # Copyright (c) 2008 [Sur http://expressica.com]
 
-require 'active_record'
-
 module SimpleCaptcha #:nodoc
   module ModelHelpers #:nodoc
     

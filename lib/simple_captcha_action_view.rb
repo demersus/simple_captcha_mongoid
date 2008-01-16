@@ -1,7 +1,5 @@
 # Copyright (c) 2008 [Sur http://expressica.com]
 
-require 'action_view'
-
 module SimpleCaptcha #:nodoc
   module ViewHelpers #:nodoc
     
@@ -81,7 +79,7 @@ module SimpleCaptcha #:nodoc
 
     def simple_captcha_image(options={})
       url = 
-        simple_captcha_url(:only_path => false,
+        simple_captcha_url(
           :action => 'simple_captcha',
           :image_style => options[:image_style] || '', 
           :distortion => options[:distortion] || '')
@@ -93,7 +91,7 @@ module SimpleCaptcha #:nodoc
       if options[:object]
         field << text_field(options[:object], :captcha, :value => "")
         field << hidden_field(options[:object], :captcha_key, {:value => options[:field_value]})
-      else
+      else 
         field << text_field_tag(:captcha)
       end
       field

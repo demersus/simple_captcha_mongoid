@@ -76,7 +76,7 @@ Setup
     This is a mandatory route used for rendering the simple_captcha image on the fly without 
     storing on the filesyste.
 
-  STEP 4 (particularly for rails < 1.2.1, please upgrade your rails guys!! )
+  STEP 4
   ------
     add the following line in the file app/controllers/application.rb
     

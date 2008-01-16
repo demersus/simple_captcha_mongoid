@@ -1,7 +1,6 @@
 # Copyright (c) 2008 [Sur http://expressica.com]
 
 require 'digest/sha1'
-require 'fileutils'
 
 module SimpleCaptcha #:nodoc
   module ConfigTasks #:nodoc
@@ -11,9 +10,12 @@ module SimpleCaptcha #:nodoc
     def simple_captcha_image_path #:nodoc
       "#{RAILS_ROOT}/vendor/plugins/simple_captcha/assets/images/simple_captcha/"
     end
-        
+
     def simple_captcha_key #:nodoc
-      session[:simple_captcha] ||= Digest::SHA1.hexdigest(Time.now.to_s+session.session_id.to_s)
+      cookies['simple_captcha'] ||= Digest::SHA1.hexdigest(Time.now.to_s + session.session_id.to_s)
+      String === cookies['simple_captcha'] ?
+      cookies['simple_captcha'] :
+      cookies['simple_captcha'].first
     end
         
     def simple_captcha_value(key = simple_captcha_key) #:nodoc
