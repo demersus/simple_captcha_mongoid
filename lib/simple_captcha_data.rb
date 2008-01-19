@@ -5,21 +5,20 @@ class SimpleCaptchaData < ActiveRecord::Base
   
   class << self
     def get_data(key)
-      clear_old_data
-      data = find_by_key(key) || new
-      data.key = key if data.new_record?
-      data
+      data = find_by_key(key) || new(:key => key)
     end
     
     def remove_data(key)
+      clear_old_data
       data = find_by_key(key)
       data.destroy if data
     end
     
     private
     
-    def clear_old_data
-      destroy_all("updated_at < '#{1.hour.ago.to_s(:db)}' ")
+    def clear_old_data(time = 1.hour.ago)
+      return unless Time === time
+      destroy_all("updated_at < '#{time.to_s(:db)}'")
     end
   end
   
