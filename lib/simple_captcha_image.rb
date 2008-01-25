@@ -9,21 +9,36 @@ module SimpleCaptcha #:nodoc
     include ConfigTasks
     
     IMAGE_STYLES = [
-                    'embosed_silver',
-                    'simply_red',
-                    'simply_green',
-                    'simply_blue',
-                    'distorted_black',
-                    'all_black',
-                    'charcoal_grey',
-                    'almost_invisible'
-                   ]
+      'embosed_silver',
+      'simply_red',
+      'simply_green',
+      'simply_blue',
+      'distorted_black',
+      'all_black',
+      'charcoal_grey',
+      'almost_invisible'
+    ]
     
-    DISTORTIONS = {
-      'low' => [0, 100],
-      'medium' => [3, 50],
-      'high' => [5, 30]
-    }
+    DISTORTIONS = ['low', 'medium', 'high']
+
+    class << self
+      def image_style(key='simply_blue')
+        return IMAGE_STYLES[rand(IMAGE_STYLES.length)] if key=='random'
+        IMAGE_STYLES.include?(key) ? key : 'simply_blue'
+      end
+      
+      def distortion(key='low')
+        key = 
+          key == 'random' ?
+          DISTORTIONS[rand(DISTORTIONS.length)] :
+          DISTORTIONS.include?(key) ? key : 'low'
+        case key
+          when 'low' then return [0 + rand(2), 80 + rand(20)]
+          when 'medium' then return [2 + rand(2), 50 + rand(20)]
+          when 'high' then return [4 + rand(2), 30 + rand(20)]
+        end
+      end
+    end
 
     private
 
@@ -69,28 +84,22 @@ module SimpleCaptcha #:nodoc
         append_simple_captcha_code
         @image = @image.wave(amplitude, frequency).solarize
       else
-        append_simple_captcha_code(options)
+        append_simple_captcha_code
         @image = @image.wave(amplitude, frequency)
       end
     end
 
     def generate_simple_captcha_image(options={})  #:nodoc
-      @image = Magick::Image.new(110, 30){self.background_color = 'white'}
-      @image.format = "JPG"
+      @image = Magick::Image.new(110, 30) do 
+        self.background_color = 'white'
+        self.format = 'JPG'
+      end
       @simple_captcha_image_options = {
         :simple_captcha_key => options[:simple_captcha_key],
-        :color => 'darkblue'
-        }
-      @simple_captcha_image_options[:image_style] = 
-        IMAGE_STYLES.include?(options[:image_style]) ?
-        options[:image_style] :
-        'simply_blue'
-      @simple_captcha_image_options[:image_style] = 
-        IMAGE_STYLES[rand(IMAGE_STYLES.length)] if options[:image_style]=='random'
-      @simple_captcha_image_options[:distortion] = 
-        DISTORTIONS.has_key?(options[:distortion]) ?
-        DISTORTIONS[options[:distortion]] :
-        DISTORTIONS['low']
+        :color => 'darkblue',
+        :distortion => SimpleCaptcha::ImageHelpers.distortion(options[:distortion]),
+        :image_style => SimpleCaptcha::ImageHelpers.image_style(options[:image_style])
+      }
       set_simple_captcha_image_style      
       @image.implode(0.2).to_blob
     end

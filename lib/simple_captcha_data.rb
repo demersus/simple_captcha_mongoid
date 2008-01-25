@@ -14,8 +14,6 @@ class SimpleCaptchaData < ActiveRecord::Base
       data.destroy if data
     end
     
-    private
-    
     def clear_old_data(time = 1.hour.ago)
       return unless Time === time
       destroy_all("updated_at < '#{time.to_s(:db)}'")

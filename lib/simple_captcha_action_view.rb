@@ -69,13 +69,15 @@ module SimpleCaptcha #:nodoc
     #
     # All Feedbacks/CommentS/Issues/Queries are welcome.
     def show_simple_captcha(options={})
-      options[:field_value] = set_simple_captcha_data
+      options[:field_value] = set_simple_captcha_data(options[:code_type])
       @simple_captcha_options = 
         {:image => simple_captcha_image(options),
          :label => options[:label] || "(type the code from the image)",
          :field => simple_captcha_field(options)}
       render :partial => 'simple_captcha/simple_captcha'
     end
+
+    private
 
     def simple_captcha_image(options={})
       url = 
@@ -98,16 +100,25 @@ module SimpleCaptcha #:nodoc
       field
     end
 
-    def set_simple_captcha_data
-      key, value = simple_captcha_key, ""
-      6.times{value << (65 + rand(26)).chr}
+    def set_simple_captcha_data(code_type)
+      key, value = simple_captcha_key, generate_simple_captcha_data(code_type)
       data = SimpleCaptchaData.get_data(key)
       data.value = value
       data.save
       key
     end
-
-    private :set_simple_captcha_data, :simple_captcha_image, :simple_captcha_field
+ 
+    def generate_simple_captcha_data(code)
+      value = ''
+      case code
+      when 'numeric'
+        6.times{value << (48 + rand(10)).chr}
+      else
+        6.times{value << (65 + rand(26)).chr}
+      end
+      return value
+    end
+ 
   end
 end
 

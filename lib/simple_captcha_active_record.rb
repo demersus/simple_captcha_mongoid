@@ -30,10 +30,7 @@ module SimpleCaptcha #:nodoc
     module ClassMethods
       def apply_simple_captcha(options = {})
         instance_variable_set(:@add_to_base, options[:add_to_base])
-        instance_variable_set(
-          :@captcha_invalid_message,
-          options[:message] || "Secret Code did not match with the Image"
-          )
+        instance_variable_set(:@captcha_invalid_message, options[:message] || "Secret Code did not match with the Image")
         module_eval do
           include SimpleCaptcha::ConfigTasks
           attr_accessor :captcha, :captcha_key, :authenticate_with_captcha

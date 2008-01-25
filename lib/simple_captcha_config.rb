@@ -4,7 +4,7 @@ require 'digest/sha1'
 
 module SimpleCaptcha #:nodoc
   module ConfigTasks #:nodoc
-      
+
     private
     
     def simple_captcha_image_path #:nodoc

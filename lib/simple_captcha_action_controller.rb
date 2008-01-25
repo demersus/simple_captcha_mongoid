@@ -32,7 +32,3 @@ module SimpleCaptcha #:nodoc
     
   end
 end
-
-#class ApplicationController < ActionController::Base
-  #include SimpleCaptcha::ControllerHelpers
-#end
