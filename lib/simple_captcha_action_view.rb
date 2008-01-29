@@ -85,19 +85,16 @@ module SimpleCaptcha #:nodoc
           :action => 'simple_captcha',
           :simple_captcha_key => simple_captcha_key,
           :image_style => options[:image_style] || '', 
-          :distortion => options[:distortion] || '')
+          :distortion => options[:distortion] || '',
+          :time => Time.now.to_i)
       "<img src='#{url}' alt='simple_captcha.jpg' />"
     end
     
     def simple_captcha_field(options={})
-      field = ''
-      if options[:object]
-        field << text_field(options[:object], :captcha, :value => "")
-        field << hidden_field(options[:object], :captcha_key, {:value => options[:field_value]})
-      else 
-        field << text_field_tag(:captcha)
-      end
-      field
+      options[:object] ?
+      text_field(options[:object], :captcha, :value => '') +
+      hidden_field(options[:object], :captcha_key, {:value => options[:field_value]}) :
+      text_field_tag(:captcha)
     end
 
     def set_simple_captcha_data(code_type)
