@@ -1,5 +1,6 @@
 # Copyright (c) 2008 [Sur http://expressica.com]
 
+require 'simple_captcha_setup'
 require 'simple_captcha_config'
 require 'simple_captcha_image'
 require 'simple_captcha_action_view'
