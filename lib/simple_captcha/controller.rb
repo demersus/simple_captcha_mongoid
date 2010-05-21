@@ -1,9 +1,7 @@
-# Copyright (c) 2008 [Sur http://expressica.com]
-
 module SimpleCaptcha #:nodoc 
   module ControllerHelpers #:nodoc
     
-    include ConfigTasks
+    include SimpleCaptcha::Utils
     
     # This method is to validate the simple captcha in controller.
     # It means when the captcha is controller based i.e. :object has not been passed to the method show_simple_captcha.
@@ -19,7 +17,8 @@ module SimpleCaptcha #:nodoc
     #   redirect_to :action => "myaction"
     #  end
     def simple_captcha_valid?
-      return true if RAILS_ENV == 'test'
+      return true if Rails.env.test?
+      
       if params[:captcha]
         data = simple_captcha_value
         result = data == params[:captcha].delete(" ").upcase
@@ -29,6 +28,5 @@ module SimpleCaptcha #:nodoc
         return false
       end
     end
-    
   end
 end

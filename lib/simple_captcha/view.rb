@@ -1,9 +1,7 @@
-# Copyright (c) 2008 [Sur http://expressica.com]
-
 module SimpleCaptcha #:nodoc
-  module ViewHelpers #:nodoc
+  module ViewHelper #:nodoc
     
-    include ConfigTasks
+    include SimpleCaptcha::Utils
 
     # Simple Captcha is a very simplified captcha.
     #
@@ -117,8 +115,4 @@ module SimpleCaptcha #:nodoc
     end
  
   end
-end
-
-ActionView::Base.module_eval do
-  include SimpleCaptcha::ViewHelpers
 end

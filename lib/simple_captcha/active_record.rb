@@ -1,5 +1,3 @@
-# Copyright (c) 2008 [Sur http://expressica.com]
-
 module SimpleCaptcha #:nodoc
   module ModelHelpers #:nodoc
     
@@ -82,8 +80,4 @@ module SimpleCaptcha #:nodoc
       end
     end
   end
-end
-
-ActiveRecord::Base.module_eval do
-  extend SimpleCaptcha::ModelHelpers::ClassMethods
 end

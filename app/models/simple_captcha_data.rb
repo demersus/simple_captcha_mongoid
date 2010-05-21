@@ -1,5 +1,3 @@
-# Copyright (c) 2008 [Sur http://expressica.com]
-
 class SimpleCaptchaData < ActiveRecord::Base
   set_table_name "simple_captcha_data"
   
@@ -19,5 +17,4 @@ class SimpleCaptchaData < ActiveRecord::Base
       destroy_all("updated_at < '#{time.to_s(:db)}'")
     end
   end
-  
 end

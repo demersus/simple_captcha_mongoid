@@ -1,12 +1,10 @@
-# Copyright (c) 2008 [Sur http://expressica.com]
-
 require 'rubygems'
 require 'RMagick'
 
 module SimpleCaptcha #:nodoc
   module ImageHelpers #:nodoc
     
-    include ConfigTasks
+    include SimpleCaptcha::Utils
     
     IMAGE_STYLES = [
       'embosed_silver',
@@ -103,6 +101,5 @@ module SimpleCaptcha #:nodoc
       set_simple_captcha_image_style      
       @image.implode(0.2).to_blob
     end
-
   end
 end
