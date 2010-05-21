@@ -2,7 +2,7 @@
 
 SimpleCaptcha is the simplest and a robust captcha plugin. Its implementation requires 
 adding up a single line in views and in controllers/models.
-SimpleCaptcha is available to be used with Rails2.0 or above and also it provides the 
+SimpleCaptcha is available to be used with Rails 3 or above and also it provides the 
 backward compatibility with previous versions of Rails.
   
 ==Features
@@ -99,9 +99,9 @@ SimpleCaptcha detects if your use Formtastic and appends "SimpleCaptcha::CustomF
 ==Options & Examples
 ===View Options
 
-* *:label* - provides the custom text b/w the image and the text field, the default is "type the code from the image"
+* *label* - provides the custom text b/w the image and the text field, the default is "type the code from the image"
 
-* *:image_style* - provides the specific image style for the captcha image.
+* *image_style* - provides the specific image style for the captcha image.
 There are eight different styles available with the plugin as...
   1) simply_blue
   2) simply_red
@@ -115,9 +115,9 @@ There are eight different styles available with the plugin as...
 Default style is 'simply_blue'.
 You can also specify 'random' to select the random image style.
       
-* *:distortion* - handles the complexity of the image. The :distortion can be set to 'low', 'medium' or 'high'. Default is 'low'.
+* *distortion* - handles the complexity of the image. The :distortion can be set to 'low', 'medium' or 'high'. Default is 'low'.
     
-* *:object* - the name of the object of the model class, to implement the model based captcha.
+* *object* - the name of the object of the model class, to implement the model based captcha.
   
       
 ===How to change the CSS for SimpleCaptcha DOM elements?
@@ -139,9 +139,9 @@ You can change the CSS of the SimpleCaptcha DOM elements as per your need in thi
 
 ====Model Options
 
-* *:message* - provides the custom message on failure of captcha authentication the default is "Secret Code did not match with the Image"
+* *message* - provides the custom message on failure of captcha authentication the default is "Secret Code did not match with the Image"
 
-* *:add_to_base* - if set to true, appends the error message to the base.
+* *add_to_base* - if set to true, appends the error message to the base.
     
 
 =====Model's Example
@@ -157,9 +157,15 @@ You can change the CSS of the SimpleCaptcha DOM elements as per your need in thi
 ==Who's who?
 
 Enjoy the simplest captcha implementation.
+
 Author: Sur
+
 Blog: http://expressica.com
+
 Contact: sur.max@gmail.com
+
 Plugin Homepage: http://expressica.com/simple_captcha
+
+Plugin update for rails 3: http://github.com/galetahub
 
 Any feedback/comment/issue/donation is welcome!
