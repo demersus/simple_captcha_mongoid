@@ -10,7 +10,7 @@ end
 
 if Object.const_defined?("ActiveRecord")
   require 'simple_captcha/active_record'
-  ActiveRecord::Base.send(:extend, SimpleCaptcha::ModelHelpers::ClassMethods)
+  ActiveRecord::Base.send(:include, SimpleCaptcha::ModelHelpers)
 end
 
 if Object.const_defined?("Formtastic")
