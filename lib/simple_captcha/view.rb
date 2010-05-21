@@ -67,55 +67,61 @@ module SimpleCaptcha #:nodoc
     #
     # All Feedbacks/CommentS/Issues/Queries are welcome.
     def show_simple_captcha(options={})
-      options[:field_value] = set_simple_captcha_data(options[:code_type])
-      defaults = 
-        {:image => simple_captcha_image(options),
+      options[:field_value] = set_simple_captcha_data(options)
+      
+      defaults = {
+         :image => simple_captcha_image(options),
          :label => options[:label] || "(type the code from the image)",
-         :field => simple_captcha_field(options)}
+         :field => simple_captcha_field(options)
+         }
+         
       render :partial => 'simple_captcha/simple_captcha', :locals => { :simple_captcha_options => defaults }
     end
 
     private
 
-    def simple_captcha_image(options={})
-      defaults = {
-        :simple_captcha_key => simple_captcha_key,
-        :distortion => 'low',
-        :image_style => 'simply_blue',
-        :time => Time.now.to_i
-      }.merge(options)
-      
-      query = defaults.collect{ |key, value| "#{key}=#{value}" }.join('&')
-      url = "/simple_captcha?#{query}"
-      
-      "<img src='#{url}' alt='simple_captcha.jpg' />".html_safe
-    end
-    
-    def simple_captcha_field(options={})
-      options[:object] ?
-      text_field(options[:object], :captcha, :value => '') +
-      hidden_field(options[:object], :captcha_key, {:value => options[:field_value]}) :
-      text_field_tag(:captcha)
-    end
-
-    def set_simple_captcha_data(code_type)
-      key, value = simple_captcha_key, generate_simple_captcha_data(code_type)
-      data = SimpleCaptchaData.get_data(key)
-      data.value = value
-      data.save
-      key
-    end
- 
-    def generate_simple_captcha_data(code)
-      value = ''
-      case code
-      when 'numeric'
-        6.times{value << (48 + rand(10)).chr}
-      else
-        6.times{value << (65 + rand(26)).chr}
+      def simple_captcha_image(options={})
+        defaults = {
+          :distortion => 'low',
+          :image_style => 'simply_blue',
+          :time => Time.now.to_i
+        }.merge(options)
+        
+        defaults[:simple_captcha_key] ||= simple_captcha_key(defaults[:object])
+        
+        query = defaults.collect{ |key, value| "#{key}=#{value}" }.join('&')
+        url = "/simple_captcha?#{query}"
+        
+        "<img src='#{url}' alt='simple_captcha.jpg' />".html_safe
       end
-      return value
-    end
+      
+      def simple_captcha_field(options={})
+        options[:object] ?
+        text_field(options[:object], :captcha, :value => '') +
+        hidden_field(options[:object], :captcha_key, {:value => options[:field_value]}) :
+        text_field_tag(:captcha)
+      end
+
+      def set_simple_captcha_data(options={})
+        code_type, object = options[:code_type], options[:object]
+        
+        key, value = simple_captcha_key(object), generate_simple_captcha_data(code_type)
+        data = SimpleCaptchaData.get_data(key)
+        data.value = value
+        data.save
+        key
+      end
+   
+      def generate_simple_captcha_data(code)
+        value = ''
+        case code
+        when 'numeric'
+          6.times{value << (48 + rand(10)).chr}
+        else
+          6.times{value << (65 + rand(26)).chr}
+        end
+        return value
+      end
  
   end
 end

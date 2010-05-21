@@ -19,8 +19,9 @@ module SimpleCaptcha #:nodoc
       output
     end
   
-    def simple_captcha_key #:nodoc
-      session[:simple_captcha] ||= Digest::SHA1.hexdigest(Time.now.to_s + session[:id].to_s)
+    def simple_captcha_key(key_name = nil)
+      captcha_key = key_name.nil? ? "captcha" : "captcha_#{key_name}"
+      session[captcha_key] ||= Digest::SHA1.hexdigest([Time.now.to_s, session[:id].to_s, captcha_key].join)
     end
 
     def simple_captcha_value(key = simple_captcha_key) #:nodoc
