@@ -2,9 +2,23 @@ require 'digest/sha1'
 
 module SimpleCaptcha #:nodoc
   module Utils #:nodoc
-
+    
     private
 
+    # Execute command with params and return output if exit status equal expected_outcodes
+    def run(cmd, params = "", expected_outcodes = 0)
+      command = %Q[#{cmd} #{params}].gsub(/\s+/, " ")
+      command = "#{command} 2>&1"
+      
+      output = `#{command}`
+      
+      unless [expected_outcodes].flatten.include?($?.exitstatus)
+        raise ::StandardError, "Error while running #{cmd}: #{output}"
+      end
+      
+      output
+    end
+  
     def simple_captcha_key #:nodoc
       session[:simple_captcha] ||= Digest::SHA1.hexdigest(Time.now.to_s + session[:id].to_s)
     end

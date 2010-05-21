@@ -4,7 +4,7 @@ require 'simple_captcha/view'
 require 'simple_captcha/controller'
 
 if Object.const_defined?("ActionView")
-  ActionView::Base.send(:include, SimpleCaptcha::ViewHelpers)
+  ActionView::Base.send(:include, SimpleCaptcha::ViewHelper)
   ActionView::Helpers::FormBuilder.send(:include, SimpleCaptcha::FormBuilder)
 end
 

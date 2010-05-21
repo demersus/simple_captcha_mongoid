@@ -68,24 +68,27 @@ module SimpleCaptcha #:nodoc
     # All Feedbacks/CommentS/Issues/Queries are welcome.
     def show_simple_captcha(options={})
       options[:field_value] = set_simple_captcha_data(options[:code_type])
-      @simple_captcha_options = 
+      defaults = 
         {:image => simple_captcha_image(options),
          :label => options[:label] || "(type the code from the image)",
          :field => simple_captcha_field(options)}
-      render :partial => 'simple_captcha/simple_captcha'
+      render :partial => 'simple_captcha/simple_captcha', :locals => { :simple_captcha_options => defaults }
     end
 
     private
 
     def simple_captcha_image(options={})
-      url = 
-        simple_captcha_url(
-          :action => 'simple_captcha',
-          :simple_captcha_key => simple_captcha_key,
-          :image_style => options[:image_style] || '', 
-          :distortion => options[:distortion] || '',
-          :time => Time.now.to_i)
-      "<img src='#{url}' alt='simple_captcha.jpg' />"
+      defaults = {
+        :simple_captcha_key => simple_captcha_key,
+        :distortion => 'low',
+        :image_style => 'simply_blue',
+        :time => Time.now.to_i
+      }.merge(options)
+      
+      query = defaults.collect{ |key, value| "#{key}=#{value}" }.join('&')
+      url = "/simple_captcha?#{query}"
+      
+      "<img src='#{url}' alt='simple_captcha.jpg' />".html_safe
     end
     
     def simple_captcha_field(options={})

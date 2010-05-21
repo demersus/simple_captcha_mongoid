@@ -19,12 +19,12 @@ backward compatibility with previous versions of Rails.
 
 * {Ruby}[http://ruby-lang.org/] >= 1.8.7
 * {Rails}[http://github.com/rails/rails] >= 3
-* RMagick should be installed on your machine to use this plugin.
-  visit http://rmagick.rubyforge.org for more details.
+* ImageMagick should be installed on your machine to use this plugin.
+  visit http://www.imagemagick.org/script/index.php for more details.
 
 ==Installation
 
-  rails plugin install git://github.com/galetahub/simple-captcha-mirror.git
+  rails plugin install git://github.com/galetahub/simple-captcha.git
 
 ==Setup
 

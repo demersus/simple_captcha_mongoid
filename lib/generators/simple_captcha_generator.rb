@@ -11,12 +11,11 @@ class SimpleCaptchaGenerator < Rails::Generators::Base
     Time.now.strftime("%Y%m%d%H%M%S")
   end
   
-  def create_view
-    template "_simple_captcha.erb",
-             File.join('app/views', 'simple_captcha', "_simple_captcha.erb")
+  def create_partial
+    template "partial.erb", File.join('app/views', 'simple_captcha', "_simple_captcha.erb")
   end
   
   def create_migration
-    migration_template "migration.rb", File.join('db/migrate', "simple_captcha_data.rb")
+    migration_template "migration.rb", File.join('db/migrate', "create_simple_captcha_data.rb")
   end
 end

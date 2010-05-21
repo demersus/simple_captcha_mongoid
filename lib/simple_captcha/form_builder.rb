@@ -3,6 +3,8 @@ module SimpleCaptcha
     def self.included(base)
       base.send(:include, SimpleCaptcha::ViewHelper)
       base.send(:include, SimpleCaptcha::FormBuilder::ClassMethods)
+      
+      base.delegate :render, :session, :to => :template
     end
     
     module ClassMethods
@@ -16,6 +18,12 @@ module SimpleCaptcha
       	options.update :object => @object_name
       	show_simple_captcha(objectify_options(options))
       end
+      
+      private
+        
+        def template
+          @template
+        end
     end
   end
 end

@@ -1,6 +1,3 @@
-require 'rubygems'
-require 'RMagick'
-
 module SimpleCaptcha #:nodoc
   module ImageHelpers #:nodoc
     
@@ -38,68 +35,64 @@ module SimpleCaptcha #:nodoc
       end
     end
 
+    class Tempfile < ::Tempfile
+      # Replaces Tempfile's +make_tmpname+ with one that honors file extensions.
+      def make_tmpname(basename, n)
+        extension = File.extname(basename)
+        sprintf("%s,%d,%d%s", File.basename(basename, extension), $$, n, extension)
+      end
+    end
+
     private
-
-    def append_simple_captcha_code #:nodoc      
-      color = @simple_captcha_image_options[:color]
-      text = Magick::Draw.new
-      text.annotate(@image, 0, 0, 0, 5, simple_captcha_value(@simple_captcha_image_options[:simple_captcha_key])) do
-        self.font_family = 'arial'
-        self.pointsize = 22
-        self.fill = color
-        self.gravity = Magick::CenterGravity
-      end
-    end
     
-    def set_simple_captcha_image_style #:nodoc
-      amplitude, frequency = @simple_captcha_image_options[:distortion]
-      case @simple_captcha_image_options[:image_style]
-      when 'embosed_silver'
-        append_simple_captcha_code
-        @image = @image.wave(amplitude, frequency).shade(true, 20, 60)
-      when 'simply_red'
-        @simple_captcha_image_options[:color] = 'darkred'
-        append_simple_captcha_code
-        @image = @image.wave(amplitude, frequency)
-      when 'simply_green'
-        @simple_captcha_image_options[:color] = 'darkgreen'
-        append_simple_captcha_code
-        @image = @image.wave(amplitude, frequency)
-      when 'simply_blue'
-        append_simple_captcha_code
-        @image = @image.wave(amplitude, frequency)
-      when 'distorted_black'
-        append_simple_captcha_code
-        @image = @image.wave(amplitude, frequency).edge(10)
-      when 'all_black'
-        append_simple_captcha_code
-        @image = @image.wave(amplitude, frequency).edge(2)
-      when 'charcoal_grey'
-        append_simple_captcha_code
-        @image = @image.wave(amplitude, frequency).charcoal
-      when 'almost_invisible'
-        @simple_captcha_image_options[:color] = 'red'
-        append_simple_captcha_code
-        @image = @image.wave(amplitude, frequency).solarize
-      else
-        append_simple_captcha_code
-        @image = @image.wave(amplitude, frequency)
+      def set_simple_captcha_image_style(style) #:nodoc
+        case style
+          when 'embosed_silver' then 
+            ['darkblue', '-shade 20x60']
+          when 'simply_red' then
+            ['darkred', '']
+          when 'simply_green' then
+            ['darkgreen', '']
+          when 'simply_blue' then
+            ['darkblue', '']
+          when 'distorted_black' then
+            ['darkblue', '-edge 10']
+          when 'all_black' then
+            ['darkblue', '-edge 2']
+          when 'charcoal_grey' then
+            ['darkblue', '-charcoal 5']
+          when 'almost_invisible' then
+            ['red', '-solarize 50']
+          else
+            ['darkblue', '']
+        end
       end
-    end
 
-    def generate_simple_captcha_image(options={})  #:nodoc
-      @image = Magick::Image.new(110, 30) do 
-        self.background_color = 'white'
-        self.format = 'JPG'
+      def generate_simple_captcha_image(options={}) #:nodoc
+        @simple_captcha_options = {
+          :simple_captcha_key => options[:simple_captcha_key],
+          :distortion => SimpleCaptcha::ImageHelpers.distortion(options[:distortion]),
+          :image_style => SimpleCaptcha::ImageHelpers.image_style(options[:image_style])
+        }
+        color, effect = set_simple_captcha_image_style(@simple_captcha_options[:image_style])
+        amplitude, frequency = @simple_captcha_options[:distortion]
+        text = simple_captcha_value(@simple_captcha_options[:simple_captcha_key])
+        dst = Tempfile.new('simple_captcha.jpg')
+        dst.binmode
+        
+        params = [ "-size 110x30" ]
+        params << "-background white"
+        params << "-fill #{color}"
+        params << "-wave #{amplitude}x#{frequency}"
+        params << "-gravity 'Center'"
+        params << "-pointsize 22"
+        params << effect
+        params << "-implode 0.2"
+        params << "label:#{text} #{File.expand_path(dst.path)}"
+        
+        run("convert", params.join(' '))
+
+        File.expand_path(dst.path)
       end
-      @simple_captcha_image_options = {
-        :simple_captcha_key => options[:simple_captcha_key],
-        :color => 'darkblue',
-        :distortion => SimpleCaptcha::ImageHelpers.distortion(options[:distortion]),
-        :image_style => SimpleCaptcha::ImageHelpers.image_style(options[:image_style])
-      }
-      set_simple_captcha_image_style      
-      @image.implode(0.2).to_blob
-    end
   end
 end
