@@ -67,10 +67,11 @@ module SimpleCaptcha #:nodoc
     #
     # All Feedbacks/CommentS/Issues/Queries are welcome.
     def show_simple_captcha(options={})
-      options[:field_value] = set_simple_captcha_data(options)
+      key = simple_captcha_key(options[:object])
+      options[:field_value] = set_simple_captcha_data(key, options)
       
       defaults = {
-         :image => simple_captcha_image(options),
+         :image => simple_captcha_image(key, options),
          :label => options[:label] || "(type the code from the image)",
          :field => simple_captcha_field(options)
          }
@@ -80,12 +81,12 @@ module SimpleCaptcha #:nodoc
 
     private
 
-      def simple_captcha_image(options={})
+      def simple_captcha_image(key, options={})
         defaults = {}
         defaults[:distortion] = options[:distortion] || 'low'
         defaults[:image_style] = options[:image_style] || 'simply_blue'
         defaults[:time] = options[:time] || Time.now.to_i        
-        defaults[:simple_captcha_key] ||= simple_captcha_key(options[:object])
+        defaults[:simple_captcha_key] ||= key
         
         query = defaults.collect{ |key, value| "#{key}=#{value}" }.join('&')
         url = "/simple_captcha?#{query}"
@@ -102,10 +103,10 @@ module SimpleCaptcha #:nodoc
         end
       end
 
-      def set_simple_captcha_data(options={})
-        code_type, object = options[:code_type], options[:object]
+      def set_simple_captcha_data(key, options={})
+        code_type = options[:code_type]
         
-        key, value = simple_captcha_key(object), generate_simple_captcha_data(code_type)
+        value = generate_simple_captcha_data(code_type)
         data = SimpleCaptchaData.get_data(key)
         data.value = value
         data.save
@@ -126,8 +127,11 @@ module SimpleCaptcha #:nodoc
       end
       
       def simple_captcha_key(key_name = nil)
-        captcha_key = key_name.nil? ? "captcha" : "captcha_#{key_name}"
-        session[captcha_key] ||= Digest::SHA1.hexdigest([Time.now.to_s, session[:id].to_s, captcha_key].join)
+        if key_name.nil?
+          session[:captcha] ||= Digest::SHA1.hexdigest([Time.now.to_s, session[:id].to_s, 'captcha'].join)
+        else
+          Digest::SHA1.hexdigest([Time.now.to_s, session[:id].to_s, key_name].join)
+        end
       end 
   end
 end

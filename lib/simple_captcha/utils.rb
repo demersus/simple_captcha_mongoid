@@ -14,11 +14,11 @@ module SimpleCaptcha #:nodoc
       output
     end
 
-    def self.simple_captcha_value(key = simple_captcha_key) #:nodoc
+    def self.simple_captcha_value(key) #:nodoc
       SimpleCaptchaData.get_data(key).value rescue nil
     end
 
-    def self.simple_captcha_passed!(key = simple_captcha_key) #:nodoc
+    def self.simple_captcha_passed!(key) #:nodoc
       SimpleCaptchaData.remove_data(key)
     end
   end
