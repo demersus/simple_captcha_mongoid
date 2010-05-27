@@ -95,10 +95,8 @@ module SimpleCaptcha #:nodoc
       
       def simple_captcha_field(options={})
         if options[:object]
-          #text_field(options[:object], :captcha, :value => '') +
-          #hidden_field(options[:object], :captcha_key, {:value => options[:field_value]})
-          text_field(:captcha, :value => '') +
-          hidden_field(:captcha_key, {:value => options[:field_value]})
+          text_field(options[:object], :captcha, :value => '') +
+          hidden_field(options[:object], :captcha_key, {:value => options[:field_value]})
         else
           text_field_tag(:captcha)
         end
