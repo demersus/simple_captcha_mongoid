@@ -1,8 +1,6 @@
 module SimpleCaptcha #:nodoc
   module ImageHelpers #:nodoc
     
-    include SimpleCaptcha::Utils
-    
     IMAGE_STYLES = [
       'embosed_silver',
       'simply_red',
@@ -69,18 +67,18 @@ module SimpleCaptcha #:nodoc
       end
 
       def generate_simple_captcha_image(options={}) #:nodoc
-        @simple_captcha_options = {
+        simple_captcha_options = {
           :simple_captcha_key => options[:simple_captcha_key],
           :distortion => SimpleCaptcha::ImageHelpers.distortion(options[:distortion]),
           :image_style => SimpleCaptcha::ImageHelpers.image_style(options[:image_style])
         }
-        color, effect = set_simple_captcha_image_style(@simple_captcha_options[:image_style])
-        amplitude, frequency = @simple_captcha_options[:distortion]
-        text = simple_captcha_value(@simple_captcha_options[:simple_captcha_key])
+        color, effect = set_simple_captcha_image_style(simple_captcha_options[:image_style])
+        amplitude, frequency = simple_captcha_options[:distortion]
+        text = SimpleCaptcha::Utils::simple_captcha_value(simple_captcha_options[:simple_captcha_key])
         dst = Tempfile.new('simple_captcha.jpg')
         dst.binmode
         
-        params = [ "-size 110x30" ]
+        params = [ "-size #{SimpleCaptcha.image_size}" ]
         params << "-background white"
         params << "-fill #{color}"
         params << "-wave #{amplitude}x#{frequency}"
@@ -90,7 +88,7 @@ module SimpleCaptcha #:nodoc
         params << "-implode 0.2"
         params << "label:#{text} #{File.expand_path(dst.path)}"
         
-        run("convert", params.join(' '))
+        SimpleCaptcha::Utils::run("convert", params.join(' '))
 
         File.expand_path(dst.path)
       end

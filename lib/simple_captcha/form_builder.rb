@@ -24,6 +24,11 @@ module SimpleCaptcha
         def template
           @template
         end
+        
+        def simple_captcha_field(options={})
+          text_field(:captcha, :value => '') +
+          hidden_field(:captcha_key, {:value => options[:field_value]})
+        end
     end
   end
 end

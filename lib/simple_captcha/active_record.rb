@@ -40,10 +40,9 @@ module SimpleCaptcha #:nodoc
         
         unless self.is_a?(ClassMethods)
           include InstanceMethods
-          include SimpleCaptcha::Utils
           extend ClassMethods
           
-          attr_accessor :captcha, :captcha_key, :authenticate_with_captcha
+          attr_accessor :captcha, :captcha_key
         end
       end
     end
@@ -58,9 +57,8 @@ module SimpleCaptcha #:nodoc
       end
       
       def is_captcha_valid?
-        if captcha && captcha.upcase.delete(" ") == simple_captcha_value(captcha_key)
-          simple_captcha_passed!(captcha_key)
-          
+        if captcha && captcha.upcase.delete(" ") == SimpleCaptcha::Utils::simple_captcha_value(captcha_key)
+          SimpleCaptcha::Utils::simple_captcha_passed!(captcha_key)
           return true
         else
           simple_captcha_options[:add_to_base] == true ?

@@ -17,3 +17,11 @@ if Object.const_defined?("Formtastic")
   require 'simple_captcha/formtastic'
   Formtastic::SemanticFormHelper.builder = SimpleCaptcha::CustomFormBuilder
 end
+
+module SimpleCaptcha
+  mattr_accessor :image_size
+  @@image_size = "100x28"
+  
+  mattr_accessor :length
+  @@length = 5
+end

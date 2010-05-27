@@ -1,7 +1,7 @@
+require 'digest/sha1'
+
 module SimpleCaptcha #:nodoc
   module ViewHelper #:nodoc
-    
-    include SimpleCaptcha::Utils
 
     # Simple Captcha is a very simplified captcha.
     #
@@ -81,25 +81,27 @@ module SimpleCaptcha #:nodoc
     private
 
       def simple_captcha_image(options={})
-        defaults = {
-          :distortion => 'low',
-          :image_style => 'simply_blue',
-          :time => Time.now.to_i
-        }.merge(options)
-        
-        defaults[:simple_captcha_key] ||= simple_captcha_key(defaults[:object])
+        defaults = {}
+        defaults[:distortion] = options[:distortion] || 'low'
+        defaults[:image_style] = options[:image_style] || 'simply_blue'
+        defaults[:time] = options[:time] || Time.now.to_i        
+        defaults[:simple_captcha_key] ||= simple_captcha_key(options[:object])
         
         query = defaults.collect{ |key, value| "#{key}=#{value}" }.join('&')
         url = "/simple_captcha?#{query}"
         
-        "<img src='#{url}' alt='simple_captcha.jpg' />".html_safe
+        "<img src='#{url}' alt='captcha' />".html_safe
       end
       
       def simple_captcha_field(options={})
-        options[:object] ?
-        text_field(options[:object], :captcha, :value => '') +
-        hidden_field(options[:object], :captcha_key, {:value => options[:field_value]}) :
-        text_field_tag(:captcha)
+        if options[:object]
+          #text_field(options[:object], :captcha, :value => '') +
+          #hidden_field(options[:object], :captcha_key, {:value => options[:field_value]})
+          text_field(:captcha, :value => '') +
+          hidden_field(:captcha_key, {:value => options[:field_value]})
+        else
+          text_field_tag(:captcha)
+        end
       end
 
       def set_simple_captcha_data(options={})
@@ -114,14 +116,20 @@ module SimpleCaptcha #:nodoc
    
       def generate_simple_captcha_data(code)
         value = ''
+        
         case code
-        when 'numeric'
-          6.times{value << (48 + rand(10)).chr}
-        else
-          6.times{value << (65 + rand(26)).chr}
+          when 'numeric' then 
+            SimpleCaptcha.length.times{value << (48 + rand(10)).chr}
+          else
+            SimpleCaptcha.length.times{value << (65 + rand(26)).chr}
         end
+        
         return value
       end
- 
+      
+      def simple_captcha_key(key_name = nil)
+        captcha_key = key_name.nil? ? "captcha" : "captcha_#{key_name}"
+        session[captcha_key] ||= Digest::SHA1.hexdigest([Time.now.to_s, session[:id].to_s, captcha_key].join)
+      end 
   end
 end

@@ -118,7 +118,11 @@ You can also specify 'random' to select the random image style.
 * *distortion* - handles the complexity of the image. The :distortion can be set to 'low', 'medium' or 'high'. Default is 'low'.
     
 * *object* - the name of the object of the model class, to implement the model based captcha.
-  
+
+===Global options
+
+  SimpleCaptcha.image_size = '120x40'
+  SimpleCaptcha.length = 6
       
 ===How to change the CSS for SimpleCaptcha DOM elements?
 You can change the CSS of the SimpleCaptcha DOM elements as per your need in this file.
@@ -142,7 +146,6 @@ You can change the CSS of the SimpleCaptcha DOM elements as per your need in thi
 * *message* - provides the custom message on failure of captcha authentication the default is "Secret Code did not match with the Image"
 
 * *add_to_base* - if set to true, appends the error message to the base.
-    
 
 =====Model's Example
     
