@@ -1,3 +1,5 @@
+require 'digest/sha1'
+
 module SimpleCaptcha #:nodoc
   module Utils #:nodoc
     # Execute command with params and return output if exit status equal expected_outcodes
@@ -20,6 +22,11 @@ module SimpleCaptcha #:nodoc
 
     def self.simple_captcha_passed!(key) #:nodoc
       SimpleCaptchaData.remove_data(key)
+    end
+    
+    def self.generate_key(*args)
+      args << Time.now.to_s
+      Digest::SHA1.hexdigest(args.join)
     end
   end
 end

@@ -1,5 +1,3 @@
-require 'digest/sha1'
-
 module SimpleCaptcha #:nodoc
   module ViewHelper #:nodoc
 
@@ -128,9 +126,9 @@ module SimpleCaptcha #:nodoc
       
       def simple_captcha_key(key_name = nil)
         if key_name.nil?
-          session[:captcha] ||= Digest::SHA1.hexdigest([Time.now.to_s, session[:id].to_s, 'captcha'].join)
+          session[:captcha] ||= SimpleCaptcha::Utils.generate_key(session[:id].to_s, 'captcha')
         else
-          Digest::SHA1.hexdigest([Time.now.to_s, session[:id].to_s, key_name].join)
+          SimpleCaptcha::Utils.generate_key(session[:id].to_s, key_name)
         end
       end 
   end
