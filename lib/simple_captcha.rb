@@ -24,4 +24,28 @@ module SimpleCaptcha
   
   mattr_accessor :length
   @@length = 5
+  
+  # 'embosed_silver',
+  # 'simply_red',
+  # 'simply_green',
+  # 'simply_blue',
+  # 'distorted_black',
+  # 'all_black',
+  # 'charcoal_grey',
+  # 'almost_invisible'
+  # 'random'
+  mattr_accessor :image_style
+  @@image_style = 'simply_blue'
+  
+  # 'low', 'medium', 'high', 'random'
+  mattr_accessor :distortion
+  @@distortion = 'low'
+  
+  def self.add_image_style(name, params = [])
+    SimpleCaptcha::ImageHelpers.image_styles.update(name.to_s => params)
+  end
+  
+  def self.setup
+    yield self
+  end
 end

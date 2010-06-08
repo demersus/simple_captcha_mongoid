@@ -11,7 +11,7 @@ module SimpleCaptcha
       # Example:
 		  # <% form_for :post, :url => posts_path do |form| %>
 		  #   ...
-		  #   <%= form.simple_captcha :label => "Enter numbers..", :image_style => "simply_red" %>
+		  #   <%= form.simple_captcha :label => "Enter numbers.." %>
 		  # <% end %>
 		  #
 		  def simple_captcha(options = {})
@@ -26,7 +26,7 @@ module SimpleCaptcha
         end
         
         def simple_captcha_field(options={})
-          text_field(:captcha, :value => '') +
+          text_field(:captcha, :value => '', :autocomplete => 'off') +
           hidden_field(:captcha_key, {:value => options[:field_value]})
         end
     end

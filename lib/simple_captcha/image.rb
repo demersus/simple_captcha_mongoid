@@ -1,23 +1,34 @@
 module SimpleCaptcha #:nodoc
   module ImageHelpers #:nodoc
-    
-    IMAGE_STYLES = [
-      'embosed_silver',
-      'simply_red',
-      'simply_green',
-      'simply_blue',
-      'distorted_black',
-      'all_black',
-      'charcoal_grey',
-      'almost_invisible'
-    ]
+  
+    mattr_accessor :image_styles
+    @@image_styles = {
+      'embosed_silver'  => ['-fill darkblue', '-shade 20x60', '-background white'],
+      'simply_red'      => ['-fill darkred', '-background white'],
+      'simply_green'    => ['-fill darkgreen', '-background white'],
+      'simply_blue'     => ['-fill darkblue', '-background white'],
+      'distorted_black' => ['-fill darkblue', '-edge 10', '-background white'],
+      'all_black'       => ['-fill darkblue', '-edge 2', '-background white'],
+      'charcoal_grey'   => ['-fill darkblue', '-charcoal 5', '-background white'],
+      'almost_invisible' => ['-fill red', '-solarize 50', '-background white']
+    }
     
     DISTORTIONS = ['low', 'medium', 'high']
 
     class << self
-      def image_style(key='simply_blue')
-        return IMAGE_STYLES[rand(IMAGE_STYLES.length)] if key=='random'
-        IMAGE_STYLES.include?(key) ? key : 'simply_blue'
+    
+      def image_params(key = 'simply_blue')
+        image_keys = @@image_styles.keys
+        
+        style = begin
+          if key == 'random'
+            image_keys[rand(image_keys.length)]
+          else
+            image_keys.include?(key) ? key : 'simply_blue'
+          end
+        end
+        
+        @@image_styles[style]
       end
       
       def distortion(key='low')
@@ -25,7 +36,7 @@ module SimpleCaptcha #:nodoc
           key == 'random' ?
           DISTORTIONS[rand(DISTORTIONS.length)] :
           DISTORTIONS.include?(key) ? key : 'low'
-        case key
+        case key.to_s
           when 'low' then return [0 + rand(2), 80 + rand(20)]
           when 'medium' then return [2 + rand(2), 50 + rand(20)]
           when 'high' then return [4 + rand(2), 30 + rand(20)]
@@ -42,51 +53,21 @@ module SimpleCaptcha #:nodoc
     end
 
     private
-    
-      def set_simple_captcha_image_style(style) #:nodoc
-        case style
-          when 'embosed_silver' then 
-            ['darkblue', '-shade 20x60']
-          when 'simply_red' then
-            ['darkred', '']
-          when 'simply_green' then
-            ['darkgreen', '']
-          when 'simply_blue' then
-            ['darkblue', '']
-          when 'distorted_black' then
-            ['darkblue', '-edge 10']
-          when 'all_black' then
-            ['darkblue', '-edge 2']
-          when 'charcoal_grey' then
-            ['darkblue', '-charcoal 5']
-          when 'almost_invisible' then
-            ['red', '-solarize 50']
-          else
-            ['darkblue', '']
-        end
-      end
 
-      def generate_simple_captcha_image(options={}) #:nodoc
-        simple_captcha_options = {
-          :simple_captcha_key => options[:simple_captcha_key],
-          :distortion => SimpleCaptcha::ImageHelpers.distortion(options[:distortion]),
-          :image_style => SimpleCaptcha::ImageHelpers.image_style(options[:image_style])
-        }
-        color, effect = set_simple_captcha_image_style(simple_captcha_options[:image_style])
-        amplitude, frequency = simple_captcha_options[:distortion]
-        text = SimpleCaptcha::Utils::simple_captcha_value(simple_captcha_options[:simple_captcha_key])
+      def generate_simple_captcha_image(simple_captcha_key) #:nodoc        
+        amplitude, frequency = ImageHelpers.distortion(SimpleCaptcha.distortion)
+        text = Utils::simple_captcha_value(simple_captcha_key)
+        
         dst = Tempfile.new('simple_captcha.jpg')
         dst.binmode
         
-        params = [ "-size #{SimpleCaptcha.image_size}" ]
-        params << "-background white"
-        params << "-fill #{color}"
+        params = ImageHelpers.image_params(SimpleCaptcha.image_style).dup
+        params << "-size #{SimpleCaptcha.image_size}"
         params << "-wave #{amplitude}x#{frequency}"
         params << "-gravity 'Center'"
         params << "-pointsize 22"
-        params << effect
         params << "-implode 0.2"
-        params << "label:#{text} #{File.expand_path(dst.path)}"
+        params << "label:#{text} '#{File.expand_path(dst.path)}'"
         
         SimpleCaptcha::Utils::run("convert", params.join(' '))
 

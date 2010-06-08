@@ -13,35 +13,13 @@ module SimpleCaptcha #:nodoc
     #
     # The available options to pass to this method are
     # * label
-    # * image_syle
     # * object
-    # * distortion
     #
     # <b>Label:</b>
     #
     # default label is "type the text from the image", it can be modified by passing :label as
     #
     # <%= show_simple_captcha(:label => "new captcha label") %>.
-    #
-    # <b>Image Style:</b>
-    #
-    # There are eight different styles of images available as...
-    # * embosed_silver
-    # * simply_red
-    # * simply_green
-    # * simply_blue
-    # * distorted_black
-    # * all_black
-    # * charcoal_grey
-    # * almost_invisible
-    #
-    # The default image is simply_blue and can be modified by passing any of the above style as...
-    #
-    # <%= show_simple_captcha(:image_style => "simply_red") %>
-    #
-    # The images can also be selected randomly by using *random* in the image_style as
-    # 
-    # <%= show_simple_captcha(:image_style => "random") %>
     #
     # *Object*
     #
@@ -57,9 +35,9 @@ module SimpleCaptcha #:nodoc
     #
     # *Examples*
     # * controller based
-    # <%= show_simple_captcha(:image_style => "embosed_silver", :label => "Human Authentication: type the text from image above") %>
+    # <%= show_simple_captcha(:label => "Human Authentication: type the text from image above") %>
     # * model based
-    # <%= show_simple_captcha(:object => "person", :image_style => "simply_blue", :label => "Human Authentication: type the text from image above") %>
+    # <%= show_simple_captcha(:object => "person", :label => "Human Authentication: type the text from image above") %>
     #
     # Find more detailed examples with sample images here on my blog http://EXPRESSICA.com
     #
@@ -70,7 +48,7 @@ module SimpleCaptcha #:nodoc
       
       defaults = {
          :image => simple_captcha_image(key, options),
-         :label => options[:label] || "(type the code from the image)",
+         :label => options[:label] || I18n.t('simple_captcha.label'),
          :field => simple_captcha_field(options)
          }
          
@@ -79,25 +57,22 @@ module SimpleCaptcha #:nodoc
 
     private
 
-      def simple_captcha_image(key, options={})
+      def simple_captcha_image(simple_captcha_key, options = {})
         defaults = {}
-        defaults[:distortion] = options[:distortion] || 'low'
-        defaults[:image_style] = options[:image_style] || 'simply_blue'
-        defaults[:time] = options[:time] || Time.now.to_i        
-        defaults[:simple_captcha_key] ||= key
+        defaults[:time] = options[:time] || Time.now.to_i
         
         query = defaults.collect{ |key, value| "#{key}=#{value}" }.join('&')
-        url = "/simple_captcha?#{query}"
+        url = "/simple_captcha/#{simple_captcha_key}?#{query}"
         
         "<img src='#{url}' alt='captcha' />".html_safe
       end
       
       def simple_captcha_field(options={})
         if options[:object]
-          text_field(options[:object], :captcha, :value => '') +
+          text_field(options[:object], :captcha, :value => '', :autocomplete => 'off') +
           hidden_field(options[:object], :captcha_key, {:value => options[:field_value]})
         else
-          text_field_tag(:captcha)
+          text_field_tag(:captcha, nil, :autocomplete => 'off')
         end
       end
 
