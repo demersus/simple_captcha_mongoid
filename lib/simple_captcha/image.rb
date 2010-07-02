@@ -71,7 +71,9 @@ module SimpleCaptcha #:nodoc
         params << "label:#{text} '#{File.expand_path(dst.path)}'"
         
         SimpleCaptcha::Utils::run("convert", params.join(' '))
-
+        
+        dst.close
+        
         File.expand_path(dst.path)
       end
   end
