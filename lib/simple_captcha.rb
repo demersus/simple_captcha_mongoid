@@ -1,24 +1,13 @@
-require 'simple_captcha/utils'
-require 'simple_captcha/image'
-require 'simple_captcha/view'
-require 'simple_captcha/controller'
-
-if Object.const_defined?("ActionView")
-  ActionView::Base.send(:include, SimpleCaptcha::ViewHelper)
-  ActionView::Helpers::FormBuilder.send(:include, SimpleCaptcha::FormBuilder)
-end
-
-if Object.const_defined?("ActiveRecord")
-  require 'simple_captcha/active_record'
-  ActiveRecord::Base.send(:include, SimpleCaptcha::ModelHelpers)
-end
-
-if Object.const_defined?("Formtastic")
-  require 'simple_captcha/formtastic'
-  Formtastic::SemanticFormHelper.builder = SimpleCaptcha::CustomFormBuilder
-end
-
+# encoding: utf-8
 module SimpleCaptcha
+  autoload :Utils,             'simple_captcha/utils'
+  autoload :ImageHelpers,      'simple_captcha/image'  
+  autoload :ViewHelper,        'simple_captcha/view'
+  autoload :ControllerHelpers, 'simple_captcha/controller'
+  
+  autoload :ModelHelpers,      'simple_captcha/active_record'
+  autoload :CustomFormBuilder, 'simple_captcha/formtastic'
+  
   mattr_accessor :image_size
   @@image_size = "100x28"
   
@@ -49,3 +38,5 @@ module SimpleCaptcha
     yield self
   end
 end
+
+require 'simple_captcha/railtie'
