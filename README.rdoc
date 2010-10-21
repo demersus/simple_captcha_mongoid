@@ -24,6 +24,12 @@ backward compatibility with previous versions of Rails.
 
 ==Installation
 
+Via gem
+
+  gem 'simple-captcha', :git => 'git://github.com/galetahub/simple-captcha.git'
+
+or via plugin
+
   rails plugin install git://github.com/galetahub/simple-captcha.git
 
 ==Setup

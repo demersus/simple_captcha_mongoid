@@ -1,11 +1,13 @@
 # encoding: utf-8
 module SimpleCaptcha
   autoload :Utils,             'simple_captcha/utils'
+  
   autoload :ImageHelpers,      'simple_captcha/image'  
   autoload :ViewHelper,        'simple_captcha/view'
   autoload :ControllerHelpers, 'simple_captcha/controller'
-  
   autoload :ModelHelpers,      'simple_captcha/active_record'
+  
+  autoload :FormBuilder,       'simple_captcha/form_builder'
   autoload :CustomFormBuilder, 'simple_captcha/formtastic'
   
   mattr_accessor :image_size
