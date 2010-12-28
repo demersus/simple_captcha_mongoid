@@ -44,7 +44,7 @@ module SimpleCaptcha #:nodoc
       end
     end
 
-    if RUBY_VERSION < '1.9.2'
+    if RUBY_VERSION < '1.9'
       class Tempfile < ::Tempfile
         # Replaces Tempfile's +make_tmpname+ with one that honors file extensions.
         def make_tmpname(basename, n = 0)
@@ -67,7 +67,7 @@ module SimpleCaptcha #:nodoc
         params << "-pointsize 22"
         params << "-implode 0.2"
 
-        dst = RUBY_VERSION < '1.9.2' ? Tempfile.new('simple_captcha.jpg') : Tempfile.new(['simple_captcha', '.jpg'])
+        dst = RUBY_VERSION < '1.9' ? Tempfile.new('simple_captcha.jpg') : Tempfile.new(['simple_captcha', '.jpg'])
         dst.binmode
 
         params << "label:#{text} '#{File.expand_path(dst.path)}'"
