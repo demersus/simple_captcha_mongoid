@@ -1,10 +1,10 @@
 =SimpleCaptcha
 
-SimpleCaptcha is the simplest and a robust captcha plugin. Its implementation requires 
+SimpleCaptcha is the simplest and a robust captcha plugin. Its implementation requires
 adding up a single line in views and in controllers/models.
-SimpleCaptcha is available to be used with Rails 3 or above and also it provides the 
+SimpleCaptcha is available to be used with Rails 3 or above and also it provides the
 backward compatibility with previous versions of Rails.
-  
+
 ==Features
 
 * Zero FileSystem usage(secret code moved to db-store and image storage removed).
@@ -32,7 +32,7 @@ After installation, follow these simple steps to setup the plugin. The setup wil
 on the version of rails your application is using.
 
   rails generate simple_captcha
-  
+
   rake db:migrate
 
 ==Usage
@@ -40,17 +40,17 @@ on the version of rails your application is using.
 ===Controller Based
 
 Add the following line in the file "app/controllers/application.rb"
-    
+
   ApplicationController < ActionController::Base
     include SimpleCaptcha::ControllerHelpers
   end
 
 In the view file within the form tags add this code
-    
+
   <%= show_simple_captcha %>
-    
-and in the controller's action authenticate it as 
-    
+
+and in the controller's action authenticate it as
+
   if simple_captcha_valid?
     do this
   else
@@ -96,7 +96,7 @@ SimpleCaptcha detects if your use Formtastic and appends "SimpleCaptcha::CustomF
 ===View Options
 
 * *label* - provides the custom text b/w the image and the text field, the default is "type the code from the image"
-    
+
 * *object* - the name of the object of the model class, to implement the model based captcha.
 
 * *code_type* - return numeric only if set to 'numeric'
@@ -117,16 +117,16 @@ Default style is 'simply_blue'.
 You can also specify 'random' to select the random image style.
 
 * *distortion* - handles the complexity of the image. The :distortion can be set to 'low', 'medium' or 'high'. Default is 'low'.
-  
+
 Create "rails_root/config/initializers/simple_captcha.rb"
-  
+
   SimpleCaptcha.setup do |sc|
     # default: 100x28
     sc.image_size = '120x40'
-    
+
     # default: 5
     sc.length = 6
-    
+
     # default: simply_blue
     # possible values:
     # 'embosed_silver',
@@ -139,7 +139,7 @@ Create "rails_root/config/initializers/simple_captcha.rb"
     # 'almost_invisible'
     # 'random'
     sc.image_style = 'simply_green'
-    
+
     # default: low
     # possible values: 'low', 'medium', 'high', 'random'
     sc.distortion = 'medium'
@@ -150,25 +150,32 @@ You can add your own style:
   SimpleCaptcha.setup do |sc|
     sc.image_style = 'mycaptha'
     sc.add_image_style('mycaptha', [
-        "-background '#F4F7F8'", 
+        "-background '#F4F7F8'",
         "-fill '#86818B'",
         "-border 1",
         "-bordercolor '#E0E2E3'"])
   end
-      
+
+You can provide the path where image_magick is installed as well as well:
+
+  SimpleCaptcha.setup do |sc|
+    sc.image_magick_path = '/usr/bin' # you can check this from console by running: which convert
+  end
+
+
 ===How to change the CSS for SimpleCaptcha DOM elements?
 You can change the CSS of the SimpleCaptcha DOM elements as per your need in this file.
   /app/views/simple_captcha/_simple_captcha.erb
-  
+
 ===View's Examples
 ====Controller Based Example
 
   <%= show_simple_captcha %>
 
-  <%= show_simple_captcha(:label => "human authentication") %>     
-    
+  <%= show_simple_captcha(:label => "human authentication") %>
+
 ====Model Based Example
-    
+
   <%= show_simple_captcha(:object => 'user', :label => "human authentication") %>
 
 ====Model Options
@@ -178,7 +185,7 @@ You can change the CSS of the SimpleCaptcha DOM elements as per your need in thi
 * *add_to_base* - if set to true, appends the error message to the base.
 
 =====Model's Example
-    
+
   class User < ActiveRecord::Base
     apply_simple_captcha
   end
