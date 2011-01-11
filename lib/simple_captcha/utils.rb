@@ -8,8 +8,7 @@ module SimpleCaptcha #:nodoc
       command = "#{command} 2>&1"
 
       unless (image_magick_path = SimpleCaptcha.image_magick_path).blank?
-        image_magick_path.chop! if image_magick_path.last == "/"
-        command = image_magick_path + "/" + command
+        command = File.join(image_magick_path, command)
       end
 
       output = `#{command}`

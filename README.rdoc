@@ -156,7 +156,7 @@ You can add your own style:
         "-bordercolor '#E0E2E3'"])
   end
 
-You can provide the path where image_magick is installed as well as well:
+You can provide the path where image_magick is installed as well:
 
   SimpleCaptcha.setup do |sc|
     sc.image_magick_path = '/usr/bin' # you can check this from console by running: which convert
