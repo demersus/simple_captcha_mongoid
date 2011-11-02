@@ -3,6 +3,11 @@ module SimpleCaptcha
   class Middleware
     include SimpleCaptcha::ImageHelpers
     
+    DEFAULT_SEND_FILE_OPTIONS = {
+      :type         => 'application/octet-stream'.freeze,
+      :disposition  => 'attachment'.freeze,
+    }.freeze
+    
     def initialize(app, options={})
       @app = app
       self
@@ -20,32 +25,15 @@ module SimpleCaptcha
       def make_image(env, headers = {}, status = 404)
         request = Rack::Request.new(env)
         code = request.params["code"]
+        body = []
         
         if !code.blank? && Utils::simple_captcha_value(code)
-          status = 200
-          body = generate_simple_captcha_image(code)
-          headers['Content-Type'] = 'image/jpeg'
-          #body = File.open(body, "rb")
+          #status, headers, body = @app.call(env)
+          #status = 200
+          #body = generate_simple_captcha_image(code)
+          #headers['Content-Type'] = 'image/jpeg'
           
-          case type = variation(env)
-            when 'X-Accel-Redirect'
-              path = File.expand_path(body.to_path)
-              if url = map_accel_path(env, path)
-                headers['Content-Length'] = '0'
-                headers[type] = url
-                body = []
-              else
-                env['rack.errors'].puts "X-Accel-Mapping header missing"
-              end
-            when 'X-Sendfile', 'X-Lighttpd-Send-File'
-              path = File.expand_path(body.to_path)
-              headers['Content-Length'] = '0'
-              headers[type] = path
-              body = []
-            when '', nil
-            else
-              env['rack.errors'].puts "Unknown x-sendfile variation: '#{type}'.\n"
-          end
+          return send_file(generate_simple_captcha_image(code), :type => 'image/jpeg', :disposition => 'inline', :filename =>  'simple_captcha.jpg')
         end
         
         [status, headers, body]
@@ -55,15 +43,16 @@ module SimpleCaptcha
         request_path.include?('/simple_captcha')
       end
       
-      def variation(env)
-        env['sendfile.type'] || env['HTTP_X_SENDFILE_TYPE']
-      end
+      def send_file(path, options = {})
+        raise MissingFile, "Cannot read file #{path}" unless File.file?(path) and File.readable?(path)
 
-      def map_accel_path(env, file)
-        if mapping = env['HTTP_X_ACCEL_MAPPING']
-          internal, external = mapping.split('=', 2).map{ |p| p.strip }
-          file.sub(/^#{internal}/i, external)
-        end
+        options[:filename] ||= File.basename(path) unless options[:url_based_filename]
+
+        status = options[:status] || 200
+        headers = {"Content-Disposition" => "#{options[:disposition]}; filename='#{options[:filename]}'", "Content-Type" => options[:type], 'Content-Transfer-Encoding' => 'binary', 'Cache-Control' => 'private'}
+        response_body = File.open(path, "rb")
+        
+        [status, headers, response_body]
       end
   end
 end
