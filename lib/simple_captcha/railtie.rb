@@ -18,6 +18,8 @@ module SimpleCaptcha
         Formtastic::SemanticFormHelper.builder = SimpleCaptcha::CustomFormBuilder
       end
     end
+    
+    config.app_middleware.use SimpleCaptcha::Middleware
   end
 end
 

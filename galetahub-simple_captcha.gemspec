@@ -18,8 +18,6 @@ Gem::Specification.new do |s|
   s.files = [
     "README.rdoc",
     "Rakefile",
-    "app/controllers/simple_captcha_controller.rb",
-    "config/routes.rb",
     "lib/generators/USAGE",
     "lib/generators/simple_captcha_generator.rb",
     "lib/generators/templates/migration.rb",
