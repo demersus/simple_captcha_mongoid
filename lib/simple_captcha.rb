@@ -49,4 +49,4 @@ module SimpleCaptcha
   end
 end
 
-require 'simple_captcha/railtie'
+require 'simple_captcha/engine' if defined?(Rails)
