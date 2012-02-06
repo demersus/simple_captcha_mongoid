@@ -1,6 +1,14 @@
 module SimpleCaptcha
   class SimpleCaptchaData < ::ActiveRecord::Base
-    set_table_name "simple_captcha_data"
+    def self.rails3?
+      ::ActiveRecord::VERSION::MAJOR == 3
+    end
+
+    if rails3?
+      self.table_name = "simple_captcha_data"
+    else
+      set_table_name "simple_captcha_data"
+    end
     
     attr_accessible :key, :value
     
