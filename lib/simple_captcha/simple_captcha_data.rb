@@ -5,6 +5,8 @@ module SimpleCaptcha
     end
 
     if rails3?
+      # Fixes deprecation warning in Rails 3.2:
+      # DEPRECATION WARNING: Calling set_table_name is deprecated. Please use `self.table_name = 'the_name'` instead.
       self.table_name = "simple_captcha_data"
     else
       set_table_name "simple_captcha_data"
