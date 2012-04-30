@@ -55,8 +55,7 @@ module SimpleCaptcha #:nodoc
       render :partial => 'simple_captcha/simple_captcha', :locals => { :simple_captcha_options => defaults }
     end
 
-    #private  # Why make these private? They should be available, so I can extend simple form with a new input type...
-
+    private  
       def simple_captcha_image(simple_captcha_key, options = {})
         defaults = {}
         defaults[:time] = options[:time] || Time.now.to_i
