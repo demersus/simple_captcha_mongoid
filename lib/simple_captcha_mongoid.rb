@@ -1,1 +1,2 @@
-require 'simple_captcha' 
+
+require File.join(File.dirname(__FILE__), "simple_captcha")
