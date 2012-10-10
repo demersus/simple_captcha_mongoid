@@ -6,7 +6,7 @@ module SimpleCaptcha
     field :key, type: String
     field :value, type: String
     
-    index :key
+    index(:key => 1)
     
     #def self.rails3?
     #  ::ActiveRecord::VERSION::MAJOR == 3
